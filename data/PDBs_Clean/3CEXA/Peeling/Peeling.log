@@ -1,0 +1,19 @@
+# pdb file = /home/wagram/gelly/CORNICHON/PROJECTS/DR/DR_2/PDBs_Clean/3CEXA/3CEXA.pdb
+# dssp file = /home/wagram/gelly/CORNICHON/PROJECTS/DR/DR_2/PDBs_Clean/3CEXA/3CEXA.dssp
+# R2 value = 99
+# S2D limit size = 8
+# limit size of PU= 15
+# max size of PU= 0
+# d0 value= 6.0
+# delta value= 1.5
+# only secondary structure= 0
+# pruning flag= 0
+# cut off pruning= 0
+# Max Number of pu= 40
+# END PARSE PDB
+# END PARSE DSSP
+#i/e    i/i+e R2        CI        N DOMAINS
+9.73    10.28 76.711066 58.845876 3 1 123 124 145 146 170 
+6.08    16.44 87.947329 77.347328 5 1 25 26 116 117 123 124 145 146 170 
+3.27    30.54 93.580524 87.573145 7 26 53 54 87 88 116 1 25 117 123 124 145 146 170 
+3.03    33.01 94.413287 89.138688 8 54 70 71 87 26 53 88 116 1 25 117 123 124 145 146 170 
