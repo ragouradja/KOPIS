@@ -1,0 +1,21 @@
+# pdb file = /home/wagram/gelly/CORNICHON/PROJECTS/DR/DR_2/PDBs_Clean/3U5ET/3U5ET.pdb
+# dssp file = /home/wagram/gelly/CORNICHON/PROJECTS/DR/DR_2/PDBs_Clean/3U5ET/3U5ET.dssp
+# R2 value = 99
+# S2D limit size = 8
+# limit size of PU= 15
+# max size of PU= 0
+# d0 value= 6.0
+# delta value= 1.5
+# only secondary structure= 0
+# pruning flag= 0
+# cut off pruning= 0
+# Max Number of pu= 40
+# END PARSE PDB
+# END PARSE DSSP
+#i/e    i/i+e R2        CI        N DOMAINS
+234.81   0.43 70.303547 49.425888 2 1 129 130 159 
+66.81    1.50 88.398568 78.143068 3 1 98 99 129 130 159 
+22.26    4.49 92.449660 85.469396 4 1 22 23 98 99 129 130 159 
+14.39    6.95 93.521645 87.462982 5 99 114 115 129 1 22 23 98 130 159 
+4.21    23.74 95.776814 91.731981 7 23 41 42 58 59 98 99 114 115 129 1 22 130 159 
+3.17    31.56 96.230951 92.603959 8 59 74 75 98 23 41 42 58 99 114 115 129 1 22 130 159 

@@ -1,0 +1,16 @@
+ATOM      2  CA  ARG A   1       5.135  13.865  12.083
+ATOM     13  CA  GLU A   2       6.818  11.376   9.782
+ATOM     22  CA  CYS A   3       8.527   8.105  10.474
+ATOM     28  CA  LYS A   4      11.552   6.528   8.783
+ATOM     37  CA  THR A   5      11.535   2.893   7.660
+ATOM     44  CA  GLU A   6      14.342   1.369   5.560
+ATOM     53  CA  SER A   7      13.174   0.463   2.077
+ATOM     59  CA  ASN A   8      12.490  -3.222   1.606
+ATOM     67  CA  THR A   9      12.886  -3.208  -2.173
+ATOM     74  CA  PHE A  10      15.685  -0.733  -2.937
+ATOM     85  CA  PRO A  11      18.849  -2.582  -4.015
+ATOM     92  CA  GLY A  12      22.322  -1.697  -2.786
+ATOM     96  CA  ILE A  13      23.760   1.407  -1.166
+ATOM    104  CA  CYS A  14      21.875   4.675  -1.382
+ATOM    110  CA  ILE A  15      23.892   7.401  -3.119
+ATOM    118  CA  THR A  16      21.356   9.357  -5.183
