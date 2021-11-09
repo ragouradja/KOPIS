@@ -58,12 +58,14 @@ int main (int argc, char *argv[])
 
 	/* Affichage des arguments*/
 	strncpy(code_pdb,NAME_PDB_FILE,5);
+	// printf("%s",NAME_PDB_FILE);
+	parse_pdb(NAME_PDB_FILE);
+
 	code_pdb[5]='\0';	
 	p_name_pdb_file=NAME_PDB_FILE;
 	p_code_pdb=code_pdb;
     //printf("PDB:%s\n", p_name_pdb_file);
 	/* Parsepdb */
-	parse_pdb(p_name_pdb_file);
 
 }
 /*
@@ -133,6 +135,10 @@ void parse_pdb (char *p_name_pdb_file)
 	double dt,dt2;
 	double tmp;
 
+	/* Variable cartes proba */
+	int d0 = 8;
+	int delta = 1.5;
+	double dt_prob;
 	//int tab_contact[1024][1024];
 
     //ALLOCATION ET INITIALISATION DE tab_pcontact
@@ -218,11 +224,11 @@ void parse_pdb (char *p_name_pdb_file)
 			//printf ("  %-d %s CA %lf %lf %lf\n",j+1,tab_aa[j],tab_x[j],tab_y[j],tab_z[j]);
 
 			dt=dist(tab_x[i],tab_y[i],tab_z[i],tab_x[j],tab_y[j],tab_z[j]);
-
+			dt_prob = 1 / (1 + exp((dt - d0) / delta));
 			/*Calcul des proba selon un modele logistique*/
 			
 			//printf ("%d-%d %s %s CA CA %lf\n",i+1,j+1,tab_aa[i],tab_aa[j],dt);
-			printf ("%4.2f ",dt);
+			printf ("%4.2f ",dt_prob);
 		}
     	printf ("\n");
 	}
