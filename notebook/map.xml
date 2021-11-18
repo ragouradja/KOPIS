@@ -1,0 +1,22 @@
+<annotation>
+	<folder>19HCA</folder>
+	<filename>map.png</filename>
+	<path>/home/ragou/repo/github/Protein_peeling/data/19HCA/dataset_dir/data/map.png</path>
+	<size>
+		<width>292</width>
+		<height>292</height>
+		<depth>1</depth>
+	</size>
+	<object>
+		<name>PU</name>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<occluded>0</occluded>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>166</ymin>
+			<xmax>1</xmax>
+			<ymax>166</ymax>
+		</bndbox>
+	</object>
+</annotation>
