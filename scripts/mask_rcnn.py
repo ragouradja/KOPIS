@@ -33,22 +33,16 @@ from numpy import zeros
 from numpy import asarray
 from numpy import expand_dims
 from numpy import mean
-from mrcnn.config import Config
-from mrcnn.model import MaskRCNN
-from mrcnn.utils import Dataset
-from mrcnn.utils import compute_ap
-from mrcnn.model import load_image_gt
-from mrcnn.model import mold_image
-
-mrcnnpath = r"../../mask/Mask_RCNN/"
-sys.path.append(mrcnnpath)
 
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
  
+# LOSS VERY HIGH WITH THIS PATH !
+# mrcnnpath = r"../../mask/Mask_RCNN/"
+# sys.path.append(mrcnnpath)
 
- # class that defines and loads the kangaroo dataset
+
 class PUDataset(Dataset):
     # load the dataset definitions
     def load_dataset(self, images_dir, prot_name):
@@ -102,7 +96,7 @@ class PUDataset(Dataset):
         # get details of image
         info = self.image_info[image_id]
         path = info['annot']
-        # load XML
+        # load BOX
         PU_list = self.get_PU(image_id)
         # create one array for all masks, each on a different channel
         masks = np.zeros([self.IMG_SIZE, self.IMG_SIZE, len(PU_list)], dtype='uint8')
@@ -114,17 +108,11 @@ class PUDataset(Dataset):
             masks[x:y, x:y, i] = 1
             class_ids.append(1)
         return masks, np.asarray(class_ids, dtype='int32')
-    
-
-    # load an image reference
-    def image_reference(self, image_id):
-        info = self.image_info[image_id]
-        return info['path']
 
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "SWORD_PU_cfg"
+    NAME = "SWORD_PU_80_16mini_cfg"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
@@ -134,7 +122,7 @@ class PUConfig(Config):
     # # POST_NMS_ROIS_TRAINING = 1000
     # RPN_TRAIN_ANCHORS_PER_IMAGE = 256
     # TRAIN_ROIS_PER_IMAGE = 200
-    # NUMBER OF GPUs to use. When using only a CPU, this needs to be set to 1.
+    
     GPU_COUNT = 1
 
 
@@ -177,12 +165,13 @@ def main():
 
     config.display()
     print(train_set.image_ids)
+
     model = MaskRCNN(mode='training', model_dir='../results/', config = config )
     # load weights (mscoco) and exclude the output layers
 
-    # model.load_weights('../../mask/Mask_RCNN/mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
+    model.load_weights('../../mask/Mask_RCNN/mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
     # train weights (output layers or 'heads')
-    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=10,  layers='all')
+    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=80,  layers='heads')
     # print(model.keras_model.summary())
     # tf.keras.utils.plot_model(model, to_file="mrcnn.png",show_shapes=True, show_layer_names = True)
     
