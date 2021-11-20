@@ -37,7 +37,8 @@ from numpy import mean
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
- 
+
+import datetime
 # LOSS VERY HIGH WITH THIS PATH !
 # mrcnnpath = r"../../mask/Mask_RCNN/"
 # sys.path.append(mrcnnpath)
@@ -78,7 +79,8 @@ class PUDataset(Dataset):
         for couple in PU:
             PU_list = []
             for res in couple:
-                PU_list.append(int(res * self.IMG_SIZE /shape_image ))
+                # PU_list.append(int(res * self.IMG_SIZE /shape_image )) # With resizing of images
+                PU_list.append(res) # With padding of images
             labels.append(PU_list)
         return labels
         
@@ -87,8 +89,8 @@ class PUDataset(Dataset):
         path = info['path']
         # print(path, flush=True)
         image = np.loadtxt(path,encoding='utf-8') * 255
-        image = cv2.cvtColor(np.array(image).astype(np.uint8), cv2.COLOR_RGB2BGR)
-        image = resize(image, (self.IMG_SIZE, self.IMG_SIZE), mode='constant', preserve_range=True).astype(np.uint8)
+        image = cv2.cvtColor(np.array(image).astype(np.uint8), cv2.COLOR_RGB2BGR).astype(np.uint8)
+        # image = resize(image, (self.IMG_SIZE, self.IMG_SIZE), mode='constant', preserve_range=True).astype(np.uint8)
         return image
     
     # load the masks for an image
@@ -96,10 +98,11 @@ class PUDataset(Dataset):
         # get details of image
         info = self.image_info[image_id]
         path = info['annot']
+        image = self.load_image(image_id)
         # load BOX
         PU_list = self.get_PU(image_id)
         # create one array for all masks, each on a different channel
-        masks = np.zeros([self.IMG_SIZE, self.IMG_SIZE, len(PU_list)], dtype='uint8')
+        masks = np.zeros([image.shape[0], image.shape[0], len(PU_list)], dtype='uint8')
         # create masks
         class_ids = list()
         for i in range(len(PU_list)):
@@ -112,7 +115,7 @@ class PUDataset(Dataset):
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "SWORD_PU_80_16mini_cfg"
+    NAME = "sword_pad"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
@@ -124,16 +127,17 @@ class PUConfig(Config):
     # TRAIN_ROIS_PER_IMAGE = 200
     
     GPU_COUNT = 1
-
-
     IMAGES_PER_GPU = 1
+
+    DETECTION_MIN_CONFIDENCE = 0.5
+    TOP_DOWN_PYRAMID_SIZE = 256
 
     USE_MINI_MASK = True
     MINI_MASK_SHAPE = (16, 16)  # (height, width) of the mini-mask
 
     BACKBONE = "resnet50"
 
-    IMAGE_RESIZE_MODE = "square"
+    IMAGE_RESIZE_MODE = "pad64"
     IMAGE_MIN_DIM = 256
     IMAGE_MAX_DIM = 256
 
@@ -141,13 +145,25 @@ class PUConfig(Config):
  
     IMAGE_CHANNEL_COUNT = 3
     LEARNING_RATE = 0.001
-    
+
+    def to_txt(self, now):
+        config_dict = self.to_dict().items()
+        folder = "{}{:%Y%m%dT%H%M}".format(self.NAME.lower(),now)
+        folder_results = "../results/"
+        filename = "{}{}{:%Y%m%dT%H%M}.cfg".format(folder_results, self.NAME.lower(),now)
+        f = open(filename, "w")
+        for x in config_dict:
+            f.write(f"{x}\n")
+        f.close()
+
+        os.system("move {} {}{}".format(filename, folder_results, folder))
+        print("Config in {} folder".format(folder))
+
 def main():
     # images_dir = "../sword/SWORD/PDBs_Clean/"
     images_dir = "../data/data_sword/"
 
     prot_name = next(os.walk(images_dir))[1]
-    print(prot_name)
 
     prot_name_dtf = pd.DataFrame(prot_name)
     prot_train = prot_name_dtf.sample(frac= 0.7, random_state = 42)
@@ -168,14 +184,14 @@ def main():
 
     model = MaskRCNN(mode='training', model_dir='../results/', config = config )
     # load weights (mscoco) and exclude the output layers
-
+    now = datetime.datetime.now()
     model.load_weights('../../mask/Mask_RCNN/mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
     # train weights (output layers or 'heads')
-    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=80,  layers='heads')
+    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=10,  layers='heads')
     # print(model.keras_model.summary())
     # tf.keras.utils.plot_model(model, to_file="mrcnn.png",show_shapes=True, show_layer_names = True)
-    
-    
+    config.to_txt(now)
+
 
 if __name__ == "__main__":
     main()
