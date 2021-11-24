@@ -28,34 +28,40 @@ from tensorflow.keras.metrics import MeanIoU
 import math
 import cv2
 
-
+from joblib import Parallel, delayed
 from numpy import zeros
 from numpy import asarray
 from numpy import expand_dims
 from numpy import mean
 
+
+import datetime
+import time
+# LOSS VERY HIGH WITH THIS PATH !
+# mrcnnpath = r"../../Mask_RCNN/"
+# sys.path.append(mrcnnpath)
+
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
-
-import datetime
-# LOSS VERY HIGH WITH THIS PATH !
-# mrcnnpath = r"../../mask/Mask_RCNN/"
-# sys.path.append(mrcnnpath)
-
+from mrcnn.model import load_image_gt
+import multiprocessing as mp
 
 class PUDataset(Dataset):
     # load the dataset definitions
-    def load_dataset(self, images_dir, prot_name):
+    def load_dataset(self, images_dir, filename_prot):
+        with open(filename_prot) as filin:
+            prot_name = filin.readlines()
+        
         self.IMG_SIZE = 256
         # define one class
         self.add_class("dataset", 1, "PU")
         # define data locations
         # find all images
         for image_id,prot in enumerate(prot_name):
-            prot = prot[0]
-            img_path = images_dir + prot + f"/PDBs_Clean/{prot}.pdb{prot[-1]}" + "/file_proba_contact.mat"
-            annot_path = images_dir + prot + f"/PDBs_Clean/{prot}.pdb{prot[-1]}" "/Peeling/Peeling.log"
+            prot = prot.strip()
+            img_path = images_dir + prot  + "/file_proba_contact.mat"
+            annot_path = images_dir + prot + "/Peeling/Peeling.log"
             self.add_image('dataset', image_id=image_id, path=img_path, annot = annot_path)
 
     def log_to_res(self, logfile):
@@ -80,7 +86,7 @@ class PUDataset(Dataset):
             PU_list = []
             for res in couple:
                 # PU_list.append(int(res * self.IMG_SIZE /shape_image )) # With resizing of images
-                PU_list.append(res) # With padding of images
+                PU_list.append(res) 
             labels.append(PU_list)
         return labels
         
@@ -112,10 +118,127 @@ class PUDataset(Dataset):
             class_ids.append(1)
         return masks, np.asarray(class_ids, dtype='int32')
 
+    def calculate_iou(self, y_true, y_pred):
+        results = []
+
+
+        y_true = np.array(sorted(y_true.tolist()))
+        y_pred = np.array(sorted(y_pred.tolist()))
+            
+        y_true = y_true.astype(np.float32)
+        y_pred = y_pred.astype(np.float32)
+
+
+        for i in range(0,y_true.shape[0]):
+            results_PU = []
+
+            # boxTrue
+            x_boxTrue_tleft = y_true[i,0]  # numpy index selection
+            y_boxTrue_tleft = y_true[i,1]
+            boxTrue_width = y_true[i,2]
+            boxTrue_height = y_true[i,3]
+            area_boxTrue = (boxTrue_width * boxTrue_height)
+
+            for j in range(y_pred.shape[0]):
+
+                # boxPred
+                x_boxPred_tleft = y_pred[j,0]
+                y_boxPred_tleft = y_pred[j,1]
+                boxPred_width = y_pred[j,2]
+                boxPred_height = y_pred[j,3]
+                area_boxPred = (boxPred_width * boxPred_height)
+
+
+                # calculate the bottom right coordinates for boxTrue and boxPred
+
+                # boxTrue
+                x_boxTrue_br = x_boxTrue_tleft + boxTrue_width
+                y_boxTrue_br = y_boxTrue_tleft + boxTrue_height # Version 2 revision
+
+                # boxPred
+                x_boxPred_br = x_boxPred_tleft + boxPred_width
+                y_boxPred_br = y_boxPred_tleft + boxPred_height # Version 2 revision
+
+
+                # calculate the top left and bottom right coordinates for the intersection box, boxInt
+
+                # boxInt - top left coords
+                x_boxInt_tleft = np.max([x_boxTrue_tleft,x_boxPred_tleft])
+                y_boxInt_tleft = np.max([y_boxTrue_tleft,y_boxPred_tleft]) # Version 2 revision
+
+                # boxInt - bottom right coords
+                x_boxInt_br = np.min([x_boxTrue_br,x_boxPred_br])
+                y_boxInt_br = np.min([y_boxTrue_br,y_boxPred_br]) 
+
+                # Calculate the area of boxInt, i.e. the area of the intersection 
+                # between boxTrue and boxPred.
+                # The np.max() function forces the intersection area to 0 if the boxes don't overlap.
+
+
+                # Version 2 revision
+                area_of_intersection = \
+                np.max([0,(x_boxInt_br - x_boxInt_tleft)]) * np.max([0,(y_boxInt_br - y_boxInt_tleft)])
+
+                iou = area_of_intersection / ((area_boxTrue + area_boxPred) - area_of_intersection)
+
+
+                # This must match the type used in py_func
+                iou = iou.astype(np.float32)
+                #print(f"BOX {i} MASK {j} IOU {iou}")
+                # append the result to a list at the end of each loop
+                results_PU.append(iou)
+
+            results.append(max(results_PU))
+        # return the mean IoU score for the batch
+        print(np.mean(results))
+        return np.mean(results)
+
+    def compute_iou(self, image_id):
+
+            
+        from mrcnn.model import MaskRCNN
+        from mrcnn.utils import Dataset
+        from mrcnn.config import Config
+        from mrcnn.model import load_image_gt
+        import tensorflow as tf
+        config = PUConfig()
+        # tf.keras.backend.reset_uids() 
+        model = MaskRCNN(mode='inference', model_dir='../results/', config = config )
+        # load weights (mscoco) and exclude the output layers
+        now = datetime.datetime.now()
+
+        model.load_weights("../results/sword_resize_heads20211121T1353/mask_rcnn_sword_resize_heads_0080.h5", by_name=True)
+        print(image_id)
+        image, image_meta, gt_class_id, gt_bbox, gt_mask = load_image_gt(self, config, image_id)
+        # image = self.load_image(image_id)
+        r = model.detect([image])
+        y_pred = r[0]["rois"]
+        PU = self.get_PU(image_id)
+        y_true = []
+
+        for c in PU:
+            y_true.append([c[0],c[0],c[1],c[1]])
+        y_true = np.array(y_true)
+
+        y_pred = np.array(y_pred)
+        tf.keras.backend.clear_session()
+
+        return self.calculate_iou(y_true, y_pred)
+
+    def iou_parallel(self, config):
+        start = time.time()
+        all_iou = Parallel(n_jobs = 5 , verbose = 0, prefer="threads")(delayed(self.compute_iou)
+            (image_id,config) for image_id in self.image_ids[:30])
+
+        print(all_iou)
+        print(np.mean(all_iou))
+        print(time.time() - start)
+
+
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "sword_pad"
+    NAME = "sword12k_pad_full"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
@@ -133,7 +256,7 @@ class PUConfig(Config):
     TOP_DOWN_PYRAMID_SIZE = 256
 
     USE_MINI_MASK = True
-    MINI_MASK_SHAPE = (16, 16)  # (height, width) of the mini-mask
+    MINI_MASK_SHAPE = (56, 56)  # (height, width) of the mini-mask
 
     BACKBONE = "resnet50"
 
@@ -142,9 +265,10 @@ class PUConfig(Config):
     IMAGE_MAX_DIM = 256
 
     # IMAGE_MIN_SCALE = 0
+
  
     IMAGE_CHANNEL_COUNT = 3
-    LEARNING_RATE = 0.001
+    LEARNING_RATE = 0.0001
 
     def to_txt(self, now):
         config_dict = self.to_dict().items()
@@ -158,23 +282,23 @@ class PUConfig(Config):
 
         os.system("move {} {}{}".format(filename, folder_results, folder))
         print("Config in {} folder".format(folder))
+    def form_dict(self, config_dict):
+        for key in config_dict:
+            self.key = config_dict[key]
 
 def main():
-    # images_dir = "../sword/SWORD/PDBs_Clean/"
-    images_dir = "../data/data_sword/"
+    start = time.time()
 
-    prot_name = next(os.walk(images_dir))[1]
-
-    prot_name_dtf = pd.DataFrame(prot_name)
-    prot_train = prot_name_dtf.sample(frac= 0.7, random_state = 42)
-    prot_test = prot_name_dtf[~prot_name_dtf.isin(prot_train)].dropna()
+    train_txt = "../data/train_set.txt"
+    test_txt = "../data/test_set.txt"
+    sword_dir = "../data/data_sword/"
 
     train_set = PUDataset()
-    train_set.load_dataset(images_dir, prot_train.values.tolist())
+    train_set.load_dataset(sword_dir, train_txt)
     train_set.prepare()
 
     test_set = PUDataset()
-    test_set.load_dataset(images_dir, prot_test.values.tolist())
+    test_set.load_dataset(sword_dir, test_txt)
     test_set.prepare()
 
     config = PUConfig()
@@ -182,16 +306,20 @@ def main():
     config.display()
     print(train_set.image_ids)
 
-    model = MaskRCNN(mode='training', model_dir='../results/', config = config )
-    # load weights (mscoco) and exclude the output layers
-    now = datetime.datetime.now()
-    model.load_weights('../../mask/Mask_RCNN/mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
-    # train weights (output layers or 'heads')
-    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=10,  layers='heads')
-    # print(model.keras_model.summary())
-    # tf.keras.utils.plot_model(model, to_file="mrcnn.png",show_shapes=True, show_layer_names = True)
-    config.to_txt(now)
+    # # INFERENCE or TRAINING
 
+    model = MaskRCNN(mode='training', model_dir='../results/', config = config )
+
+    # # load weights (mscoco) and exclude the output layers
+    # model.load_weights('../mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
+
+    now = datetime.datetime.now()
+    
+    # train weights (output layers or 'heads')
+    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=30,  layers='full')
+
+    config.to_txt(now)
+    print("TIME : ", time.time() - start)
 
 if __name__ == "__main__":
     main()
