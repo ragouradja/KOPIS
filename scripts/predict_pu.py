@@ -182,7 +182,7 @@ if __name__ == "__main__":
     full_folder = f"{folder}{config_name}"
 
     proba_map = get_map(pdb_file, name_pdb, folder)
-    results = make_predict(proba_map, model_name, normalised=1)
+    results = make_predict(proba_map, model_name, normalised=0)
 
     # pymol.finish_launching()
 
