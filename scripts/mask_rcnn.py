@@ -38,14 +38,17 @@ from numpy import mean
 import datetime
 import time
 # LOSS VERY HIGH WITH THIS PATH !
-# mrcnnpath = r"../../Mask_RCNN/"
-# sys.path.append(mrcnnpath)
 
+# mrcnnpath = "../"
+# sys.path.append(mrcnnpath)
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
 from mrcnn.model import load_image_gt
 import multiprocessing as mp
+
+import re
+
 
 class PUDataset(Dataset):
     # load the dataset definitions
@@ -62,6 +65,7 @@ class PUDataset(Dataset):
             prot = prot.strip()
             img_path = images_dir + prot  + "/file_proba_contact.mat"
             annot_path = images_dir + prot + "/Peeling/Peeling.log"
+            annot_path = images_dir + prot + "/" + prot + ".out"
             self.add_image('dataset', image_id=image_id, path=img_path, annot = annot_path)
 
     def log_to_res(self, logfile):
@@ -73,15 +77,36 @@ class PUDataset(Dataset):
                     xy = [[int(clean_coord[x]),int(clean_coord[x+1])] for x in range(0,len(clean_coord)-1,2)]
                     all_coords.append(xy)
         return all_coords[-1]
-    
+
+    def get_sword_domain(self, output_file):
+        domain = []
+        regex = re.compile("([\d+\-\d+]+)")
+        with open(output_file) as filin:
+            for line in filin:
+                match = regex.findall(line)
+                if match:
+                    for item in match:
+                        if "-" in item:
+                            domain.append(item.split("-"))
+        all_domain = []
+        try:
+            first_pos = int(domain[0][0])
+        except:
+            return []
+        for PU in domain[:-1]:
+            if PU[0] != "" and PU[1] != "":
+                all_domain.append([int(PU[0]) - first_pos + 1, int(PU[1]) - first_pos + 1])
+
+        return all_domain
+
     
     def get_PU(self, image_id):
         info = self.image_info[image_id]
         path = info['annot']
-        PU = self.log_to_res(path)
+        # PU = self.log_to_res(path)
+        PU = self.get_sword_domain(path)
         PU_list = []
         labels = []
-        shape_image = sorted(PU)[-1][-1]
         for couple in PU:
             PU_list = []
             for res in couple:
@@ -94,9 +119,15 @@ class PUDataset(Dataset):
         info = self.image_info[image_id]
         path = info['path']
         # print(path, flush=True)
+
+        # 255
         image = np.loadtxt(path,encoding='utf-8') * 255
         image = cv2.cvtColor(np.array(image).astype(np.uint8), cv2.COLOR_RGB2BGR).astype(np.uint8)
-        # image = resize(image, (self.IMG_SIZE, self.IMG_SIZE), mode='constant', preserve_range=True).astype(np.uint8)
+
+        # 0 1
+        # image = np.loadtxt(path,encoding='utf-8')
+        # image = cv2.cvtColor(np.array(image).astype(np.float32), cv2.COLOR_RGB2BGR).astype(np.float32)
+
         return image
     
     # load the masks for an image
@@ -108,7 +139,7 @@ class PUDataset(Dataset):
         # load BOX
         PU_list = self.get_PU(image_id)
         # create one array for all masks, each on a different channel
-        masks = np.zeros([image.shape[0], image.shape[0], len(PU_list)], dtype='uint8')
+        masks = np.zeros([self.IMG_SIZE, self.IMG_SIZE, len(PU_list)], dtype='uint8')
         # create masks
         class_ids = list()
         for i in range(len(PU_list)):
@@ -118,6 +149,16 @@ class PUDataset(Dataset):
             class_ids.append(1)
         return masks, np.asarray(class_ids, dtype='int32')
 
+    def get_PU_score(self, rois, image):
+       score = []
+       for i in range(len(rois)):
+           y1, x1, y2, x2 = rois[i]
+           B1 = (image[:y1+1,x1:x2][:,:,0]).sum() *2
+           B2 = (image[y1:y2,x2:][:,:,0]).sum() *2
+           A = image[y1:y2,x1:x2][:,:,0].sum()
+           score.append((A-(B1+B2)) / (A+(B1+B2)))
+       return score
+    
     def calculate_iou(self, y_true, y_pred):
         results = []
 
@@ -190,7 +231,6 @@ class PUDataset(Dataset):
 
             results.append(max(results_PU))
         # return the mean IoU score for the batch
-        print(np.mean(results))
         return np.mean(results)
 
     def compute_iou(self, image_id):
@@ -221,28 +261,62 @@ class PUDataset(Dataset):
         y_true = np.array(y_true)
 
         y_pred = np.array(y_pred)
-        tf.keras.backend.clear_session()
 
         return self.calculate_iou(y_true, y_pred)
 
-    def iou_parallel(self, config):
-        start = time.time()
-        all_iou = Parallel(n_jobs = 5 , verbose = 0, prefer="threads")(delayed(self.compute_iou)
-            (image_id,config) for image_id in self.image_ids[:30])
 
-        print(all_iou)
-        print(np.mean(all_iou))
-        print(time.time() - start)
+    
+    def perf(self, model, directory, epoch):
+        all_id = self.image_ids
+        if len(all_id) < 5000:
+            dataset = "test"
+        else:
+            dataset = "train"
 
+        PU_scores_predict =  []
+        iou = []
+        PU_scores_true = []
+        for image_id in all_id:
+            y_true = []
+
+            start = time.time()
+            print(image_id)
+            true_shape = self.load_image(image_id).shape[0]
+            image, image_meta, gt_class_id, gt_bbox, gt_mask =\
+               load_image_gt(self, model.config, image_id)
+            r = model.detect([image])[0]
+            y_pred = r["rois"]
+            
+            # Predict score
+            PU_scores_predict += self.get_PU_score(y_pred, image)
+            lab = self.get_PU(image_id)
+           
+
+            for i_box in range(len(lab)):
+                x1, y1 = lab[i_box]
+                x1, y1 = np.array(lab[i_box]) * model.config.to_dict()["IMAGE_MAX_DIM"] // true_shape
+                y_true.append([x1, x1, y1, y1])
+
+            PU_scores_true += self.get_PU_score(y_true, image)
+            iou.append(self.calculate_iou(np.array(y_true), y_pred))
+            print("TIME : ", time.time() - start)
+
+        np.save(f"../results/{directory}/predict_scores_{dataset}_{epoch}.npy", np.array(PU_scores_predict))
+        np.save(f"../results/{directory}/true_scores_{dataset}_{epoch}.npy", np.array(PU_scores_true))
+        np.save(f"../results/{directory}/iou_{dataset}_{epoch}.npy", np.array(iou))
+
+        
+            
 
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "sword12k_pad_full"
+    NAME = "domain_resize255_heads1048"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
-    STEPS_PER_EPOCH = 131
+    # STEPS_PER_EPOCH = 131
+    STEPS_PER_EPOCH = 1048
     # # MAX_GT_INSTANCES = 50
     # # POST_NMS_ROIS_INFERENCE = 500
     # # POST_NMS_ROIS_TRAINING = 1000
@@ -287,15 +361,20 @@ class PUConfig(Config):
             self.key = config_dict[key]
 
 def main():
-    start = time.time()
 
     train_txt = "../data/train_set.txt"
     test_txt = "../data/test_set.txt"
+    val_txt = "../data/val_set.txt"
     sword_dir = "../data/data_sword/"
 
     train_set = PUDataset()
     train_set.load_dataset(sword_dir, train_txt)
     train_set.prepare()
+
+    val_set = PUDataset()
+    val_set.load_dataset(sword_dir, val_txt)
+    val_set.prepare()
+
 
     test_set = PUDataset()
     test_set.load_dataset(sword_dir, test_txt)
@@ -304,22 +383,27 @@ def main():
     config = PUConfig()
 
     config.display()
-    print(train_set.image_ids)
+    print(len(train_set.image_ids))
+    print(len(val_set.image_ids))
 
     # # INFERENCE or TRAINING
 
-    model = MaskRCNN(mode='training', model_dir='../results/', config = config )
-
+    model = MaskRCNN(mode="training", model_dir='../results/', config = config )
     # # load weights (mscoco) and exclude the output layers
-    # model.load_weights('../mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
-
+    model.load_weights('../mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
+    # folder = "sword12k__edfull20211125T0033"
+    # model.load_weights(f'../results/{folder}/mask_rcnn_sword12k_pad_full_0015.h5', by_name=True) 
     now = datetime.datetime.now()
     
-    # train weights (output layers or 'heads')
-    model.train(train_set, test_set, learning_rate=config.LEARNING_RATE, epochs=30,  layers='full')
-
+    # # train weights (output layers or 'heads')
+    model.train(train_set, val_set, learning_rate=config.LEARNING_RATE, epochs=15,  layers='heads')
     config.to_txt(now)
-    print("TIME : ", time.time() - start)
+ 
+    # test_set.perf(model,folder, "30")
+    # train_set.perf(model,folder, "30")
+
+
+    # print("TIME : ", time.time() - start)
 
 if __name__ == "__main__":
     main()
