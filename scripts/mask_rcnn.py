@@ -37,10 +37,11 @@ from numpy import mean
 
 import datetime
 import time
+
 # LOSS VERY HIGH WITH THIS PATH !
 
-# mrcnnpath = "../"
-# sys.path.append(mrcnnpath)
+mrcnnpath = "../"
+sys.path.append(mrcnnpath)
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
@@ -121,14 +122,17 @@ class PUDataset(Dataset):
         # print(path, flush=True)
 
         # 255
-        image = np.loadtxt(path,encoding='utf-8') * 255
-        image = cv2.cvtColor(np.array(image).astype(np.uint8), cv2.COLOR_RGB2BGR).astype(np.uint8)
+        # image = np.loadtxt(path,encoding='utf-8') * 255
+        # image = cv2.cvtColor(np.array(image).astype(np.uint8), cv2.COLOR_RGB2BGR).astype(np.uint8)
 
         # 0 1
-        # image = np.loadtxt(path,encoding='utf-8')
+        image = np.loadtxt(path,encoding='utf-8')
+        image = np.expand_dims(image , axis = 2)
+        pad = np.full((self.IMG_SIZE,self.IMG_SIZE,1), dtype = np.float32, fill_value= -1.)
+        pad[:image.shape[0],:image.shape[0]] = image
         # image = cv2.cvtColor(np.array(image).astype(np.float32), cv2.COLOR_RGB2BGR).astype(np.float32)
 
-        return image
+        return pad
     
     # load the masks for an image
     def load_mask(self, image_id):
@@ -311,12 +315,12 @@ class PUDataset(Dataset):
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "domain_resize255_heads1048"
+    NAME = "real_pad_150prot"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
     # STEPS_PER_EPOCH = 131
-    STEPS_PER_EPOCH = 1048
+    STEPS_PER_EPOCH = 131
     # # MAX_GT_INSTANCES = 50
     # # POST_NMS_ROIS_INFERENCE = 500
     # # POST_NMS_ROIS_TRAINING = 1000
@@ -330,18 +334,18 @@ class PUConfig(Config):
     TOP_DOWN_PYRAMID_SIZE = 256
 
     USE_MINI_MASK = True
-    MINI_MASK_SHAPE = (56, 56)  # (height, width) of the mini-mask
+    MINI_MASK_SHAPE = (256, 256)  # (height, width) of the mini-mask
 
     BACKBONE = "resnet50"
 
     IMAGE_RESIZE_MODE = "pad64"
-    IMAGE_MIN_DIM = 256
-    IMAGE_MAX_DIM = 256
+    IMAGE_MIN_DIM = IMAGE_MAX_DIM = 256
 
     # IMAGE_MIN_SCALE = 0
 
- 
-    IMAGE_CHANNEL_COUNT = 3
+    MEAN_PIXEL = np.array([0.5])
+    IMAGE_CHANNEL_COUNT = 1
+
     LEARNING_RATE = 0.0001
 
     def to_txt(self, now):
@@ -362,9 +366,9 @@ class PUConfig(Config):
 
 def main():
 
-    train_txt = "../data/train_set.txt"
-    test_txt = "../data/test_set.txt"
-    val_txt = "../data/val_set.txt"
+    train_txt = "../data/train_set_150.txt"
+    test_txt = "../data/test_set_150.txt"
+    val_txt = "../data/val_set_150.txt"
     sword_dir = "../data/data_sword/"
 
     train_set = PUDataset()
@@ -390,20 +394,21 @@ def main():
 
     model = MaskRCNN(mode="training", model_dir='../results/', config = config )
     # # load weights (mscoco) and exclude the output layers
-    model.load_weights('../mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
-    # folder = "sword12k__edfull20211125T0033"
-    # model.load_weights(f'../results/{folder}/mask_rcnn_sword12k_pad_full_0015.h5', by_name=True) 
+    # model.load_weights('../mask_rcnn_coco.h5', by_name=T:rue, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
+    # folder = "domain_resize1024_01_heads20211129T2050"
+    # model.load_weights(f'../results/{folder}/mask_rcnn_domain_resize1024_01_heads_0015.h5', by_name=True) 
     now = datetime.datetime.now()
-    
-    # # train weights (output layers or 'heads')
-    model.train(train_set, val_set, learning_rate=config.LEARNING_RATE, epochs=15,  layers='heads')
+    model.keras_model.summary()
+    # # # train weights (output layers or 'heads')
+    model.train(train_set, val_set, learning_rate=config.LEARNING_RATE, epochs=30,  layers='all')
+
     config.to_txt(now)
  
-    # test_set.perf(model,folder, "30")
+    # test_set.perf(model,folder, "15")
     # train_set.perf(model,folder, "30")
 
 
     # print("TIME : ", time.time() - start)
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()
