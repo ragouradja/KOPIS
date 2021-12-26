@@ -30,7 +30,6 @@ from distutils.version import LooseVersion
 assert LooseVersion(tf.__version__) >= LooseVersion("2.0")
 
 tf.compat.v1.disable_eager_execution()
-
 ############################################################
 #  Utility Functions
 ############################################################
@@ -1850,10 +1849,21 @@ class MaskRCNN(object):
                             "For example, use 256, 320, 384, 448, 512, ... etc. ")
 
         # Inputs
+        # input_image = KL.Masking(mask_value=0.,
+        #     input_shape=[None, None, config.IMAGE_SHAPE[2]], name="input_image")
+        # input_image_meta = KL.Input(shape=[config.IMAGE_META_SIZE],
+        #                             name="input_image_meta")
+        # # D = KL.Masking(mask_value=-1)(input_image)
+
+        # Inputs
+
         input_image = KL.Input(
-            shape=[None, None, config.IMAGE_SHAPE[2]], name="input_image")
+            shape=[None, None, config.IMAGE_SHAPE[2]], name="input_image", dtype='float32')
         input_image_meta = KL.Input(shape=[config.IMAGE_META_SIZE],
                                     name="input_image_meta")
+
+        masking = KL.Masking(mask_value=-1., dtype ="float32",name="masking_image")(input_image)
+        
         if mode == "training":
             # RPN GT
             input_rpn_match = KL.Input(
@@ -1871,7 +1881,7 @@ class MaskRCNN(object):
                 shape=[None, 4], name="input_gt_boxes", dtype=tf.float32)
             # Normalize coordinates
             gt_boxes = KL.Lambda(lambda x: norm_boxes_graph(
-                x, K.shape(input_image)[1:3]))(input_gt_boxes)
+                x, K.shape(masking)[1:3]))(input_gt_boxes)
             # 3. GT Masks (zero padded)
             # [batch, height, width, MAX_GT_INSTANCES]
             if config.USE_MINI_MASK:
@@ -1892,10 +1902,10 @@ class MaskRCNN(object):
         # Returns a list of the last layers of each stage, 5 in total.
         # Don't create the thead (stage 5), so we pick the 4th item in the list.
         if callable(config.BACKBONE):
-            _, C2, C3, C4, C5 = config.BACKBONE(input_image, stage5=True,
+            _, C2, C3, C4, C5 = config.BACKBONE(masking, stage5=True,
                                                 train_bn=config.TRAIN_BN)
         else:
-            _, C2, C3, C4, C5 = resnet_graph(input_image, config.BACKBONE,
+            _, C2, C3, C4, C5 = resnet_graph(masking, config.BACKBONE,
                                              stage5=True, train_bn=config.TRAIN_BN)
         # Top-down Layers
         # TODO: add assert to varify feature map sizes match what's in config
@@ -1944,7 +1954,7 @@ class MaskRCNN(object):
                 def call(self, input):
                     return self.x
 
-            anchors = ConstLayer(anchors, name="anchors")(input_image)
+            anchors = ConstLayer(anchors, name="anchors")(masking)
         else:
             anchors = input_anchors
 
@@ -1990,7 +2000,7 @@ class MaskRCNN(object):
                                       name="input_roi", dtype=np.int32)
                 # Normalize coordinates
                 target_rois = KL.Lambda(lambda x: norm_boxes_graph(
-                    x, K.shape(input_image)[1:3]))(input_rois)
+                    x, K.shape(masking)[1:3]))(input_rois)
             else:
                 target_rois = rpn_rois
 
