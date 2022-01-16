@@ -57,7 +57,7 @@ class PUDataset(Dataset):
         with open(filename_prot) as filin:
             prot_name = filin.readlines()
         
-        self.IMG_SIZE = 512
+        self.IMG_SIZE = 1024
         # define one class
         self.add_class("dataset", 1, "PU")
         # define data locations
@@ -65,7 +65,7 @@ class PUDataset(Dataset):
         for image_id,prot in enumerate(prot_name):
             prot = prot.strip()
             img_path = images_dir + prot  + "/file_proba_contact.mat"
-            annot_path = images_dir + prot + "/Peeling/Peeling.log"
+            annot_path = images_dir + prot + "/Peeling.log"
             annot_path = images_dir + prot + "/" + prot + ".out"
             self.add_image('dataset', image_id=image_id, path=img_path, annot = annot_path)
 
@@ -111,7 +111,7 @@ class PUDataset(Dataset):
     def get_PU(self, image_id):
         info = self.image_info[image_id]
         path = info['annot']
-#         PU = self.log_to_res(path)
+        # PU = self.log_to_res(path)
         PU = self.get_sword_domain(path)
         return PU
         
@@ -303,7 +303,7 @@ class PUDataset(Dataset):
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "real_pad_512prot_1048"
+    NAME = "real_pad_1024prot_1048"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
@@ -312,14 +312,14 @@ class PUConfig(Config):
     # # MAX_GT_INSTANCES = 50
     # # POST_NMS_ROIS_INFERENCE = 500
     # # POST_NMS_ROIS_TRAINING = 1000
-    # RPN_TRAIN_ANCHORS_PER_IMAGE = 512
+    # RPN_TRAIN_ANCHORS_PER_IMAGE = 1024
     # TRAIN_ROIS_PER_IMAGE = 200
     
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
 
     DETECTION_MIN_CONFIDENCE = 0.5
-    TOP_DOWN_PYRAMID_SIZE = 512
+    TOP_DOWN_PYRAMID_SIZE = 256
 
     USE_MINI_MASK = True
     MINI_MASK_SHAPE = (256, 256)  # (height, width) of the mini-mask
@@ -327,7 +327,7 @@ class PUConfig(Config):
     BACKBONE = "resnet50"
 
     IMAGE_RESIZE_MODE = "none"
-    IMAGE_MIN_DIM = IMAGE_MAX_DIM = 512
+    IMAGE_MIN_DIM = IMAGE_MAX_DIM = 1024
 
     # IMAGE_MIN_SCALE = 0
 
@@ -367,9 +367,8 @@ class PUConfig(Config):
 
 def main():
 
-    train_txt = "../data/train_set_512_con.txt"
-    test_txt = "../data/test_set_512.txt"
-    val_txt = "../data/val_set_512.txt"
+    train_txt = "../data/train_set_1024_con.txt"
+    val_txt = "../data/val_set_1024_con.txt"
     sword_dir = "../data/data_sword/"
 
     train_set = PUDataset()
@@ -381,9 +380,6 @@ def main():
     val_set.prepare()
 
 
-    test_set = PUDataset()
-    test_set.load_dataset(sword_dir, test_txt)
-    test_set.prepare()
 
     config = PUConfig()
 
@@ -394,6 +390,12 @@ def main():
     # # INFERENCE or TRAINING
 
     model = MaskRCNN(mode="training", model_dir='../results/', config = config )
+    # model.save_weights('model.h5')
+    model_json = model.keras_model.to_json()
+    with open('model.json', "w") as json_file:
+        json_file.write(model_json)
+    json_file.close()
+    sys.exit()
     # model = MaskRCNN(mode="inference", model_dir='../results/', config = config )
     
     # folder = "real_pad_256prot_13120211224T1251"

@@ -6,7 +6,8 @@ import numpy as np
 
 def check(dataset, ID):
     image = dataset.load_image(ID)
-    if image.shape[0] <= 1024:
+    if image.shape[0] <= 512:
+        print(ID)
         name = dataset.image_info[ID]["path"].split("/")[3] + "\n"
         return name
     return ""
@@ -33,7 +34,7 @@ test_set.prepare()
 liste = Parallel(n_jobs= 8, verbose = 0, prefer="threads")(delayed(check)
 (train_set, ID) for ID in train_set.image_ids)
 
-f = open("../data/train_set_1024.txt","w")
+f = open("../data/train_set_512.txt","w")
 f.writelines(liste)
 f.close()
 
@@ -43,7 +44,7 @@ f.close()
 liste = Parallel(n_jobs= 8, verbose = 0, prefer="threads")(delayed(check)
 (test_set, ID) for ID in test_set.image_ids)
 
-f = open("../data/test_set_1024.txt","w")
+f = open("../data/test_set_512.txt","w")
 f.writelines(liste)
 f.close()
 
@@ -52,7 +53,7 @@ f.close()
 liste = Parallel(n_jobs= 8, verbose = 0, prefer="threads")(delayed(check)
 (val_set, ID) for ID in val_set.image_ids)
 
-f = open("../data/val_set_1024.txt","w")
+f = open("../data/val_set_512.txt","w")
 f.writelines(liste)
 f.close()
 
