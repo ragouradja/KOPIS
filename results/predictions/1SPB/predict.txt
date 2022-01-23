@@ -1,0 +1,6 @@
+PU predicted : 6 70; score : 0.9878543019294739
+PU predicted : 74 167; score : 0.9669577479362488
+PU predicted : 6 325; score : 0.9026389122009277
+PU predicted : 295 341; score : 0.8418605327606201
+PU predicted : 222 341; score : 0.7617909908294678
+PU predicted : 172 255; score : 0.6653945446014404

@@ -1,0 +1,14 @@
+Predictions for 1RVEA
+
+Benchmark Jones_original
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+[ 1 48] 	0.93 	19.59          		[]				[]
+[45 89] 	0.91 	18.37          		[]				[]
+[  6 225] 	0.9  	89.8           		[('1', '243')]			[90.53]
+[ 49 135] 	0.9  	35.51          		[]				[]
+[169 248] 	0.86 	31.43          		[]				[]
+[171 206] 	0.86 	14.69          		[]				[]
+[136 166] 	0.74 	12.65          		[]				[]
+[211 244] 	0.69 	13.88          		[]				[]
+[ 90 132] 	0.53 	17.55          		[]				[]
