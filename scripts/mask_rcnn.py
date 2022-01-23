@@ -37,10 +37,11 @@ from numpy import mean
 
 import datetime
 import time
+
 # LOSS VERY HIGH WITH THIS PATH !
 
-# mrcnnpath = "../"
-# sys.path.append(mrcnnpath)
+mrcnnpath = "../"
+sys.path.append(mrcnnpath)
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
@@ -56,7 +57,7 @@ class PUDataset(Dataset):
         with open(filename_prot) as filin:
             prot_name = filin.readlines()
         
-        self.IMG_SIZE = 256
+        self.IMG_SIZE = 1024
         # define one class
         self.add_class("dataset", 1, "PU")
         # define data locations
@@ -64,7 +65,7 @@ class PUDataset(Dataset):
         for image_id,prot in enumerate(prot_name):
             prot = prot.strip()
             img_path = images_dir + prot  + "/file_proba_contact.mat"
-            annot_path = images_dir + prot + "/Peeling/Peeling.log"
+            annot_path = images_dir + prot + "/Peeling.log"
             annot_path = images_dir + prot + "/" + prot + ".out"
             self.add_image('dataset', image_id=image_id, path=img_path, annot = annot_path)
 
@@ -93,42 +94,38 @@ class PUDataset(Dataset):
             first_pos = int(domain[0][0])
         except:
             return []
+        beg = 1
         for PU in domain[:-1]:
             if PU[0] != "" and PU[1] != "":
-                all_domain.append([int(PU[0]) - first_pos + 1, int(PU[1]) - first_pos + 1])
+                rel = np.loadtxt(f"{output_file[:-4]}.num")
+                inf = np.where(rel >= int(PU[0]))[0] + 1
+                sup = np.where(rel <= int(PU[1]))[0] + 1
+                cov = np.in1d(inf,sup)
+                res1 = inf[cov][0]
+                res2 = inf[cov][-1]
+                all_domain.append([res1,res2])
 
         return all_domain
-
+    
     
     def get_PU(self, image_id):
         info = self.image_info[image_id]
         path = info['annot']
         # PU = self.log_to_res(path)
         PU = self.get_sword_domain(path)
-        PU_list = []
-        labels = []
-        for couple in PU:
-            PU_list = []
-            for res in couple:
-                # PU_list.append(int(res * self.IMG_SIZE /shape_image )) # With resizing of images
-                PU_list.append(res) 
-            labels.append(PU_list)
-        return labels
+        return PU
         
     def load_image(self, image_id):
         info = self.image_info[image_id]
         path = info['path']
         # print(path, flush=True)
-
-        # 255
-        image = np.loadtxt(path,encoding='utf-8') * 255
-        image = cv2.cvtColor(np.array(image).astype(np.uint8), cv2.COLOR_RGB2BGR).astype(np.uint8)
-
         # 0 1
-        # image = np.loadtxt(path,encoding='utf-8')
-        # image = cv2.cvtColor(np.array(image).astype(np.float32), cv2.COLOR_RGB2BGR).astype(np.float32)
+        image = np.loadtxt(path,encoding='utf-8')
+        image = np.expand_dims(image , axis = 2)
+        pad = np.full((self.IMG_SIZE,self.IMG_SIZE,1), dtype = np.float32, fill_value= -1.)
+        pad[:image.shape[0],:image.shape[0]] = image
 
-        return image
+        return pad
     
     # load the masks for an image
     def load_mask(self, image_id):
@@ -235,12 +232,7 @@ class PUDataset(Dataset):
 
     def compute_iou(self, image_id):
 
-            
-        from mrcnn.model import MaskRCNN
-        from mrcnn.utils import Dataset
-        from mrcnn.config import Config
-        from mrcnn.model import load_image_gt
-        import tensorflow as tf
+        
         config = PUConfig()
         # tf.keras.backend.reset_uids() 
         model = MaskRCNN(mode='inference', model_dir='../results/', config = config )
@@ -311,7 +303,7 @@ class PUDataset(Dataset):
 # define a configuration for the model
 class PUConfig(Config):
     # define the name of the configuration
-    NAME = "domain_resize255_heads1048"
+    NAME = "real_pad_1024prot_1048"
     # number of classes (background + PU)
     NUM_CLASSES = 1 + 1
     # number of training steps per epoch
@@ -320,7 +312,7 @@ class PUConfig(Config):
     # # MAX_GT_INSTANCES = 50
     # # POST_NMS_ROIS_INFERENCE = 500
     # # POST_NMS_ROIS_TRAINING = 1000
-    # RPN_TRAIN_ANCHORS_PER_IMAGE = 256
+    # RPN_TRAIN_ANCHORS_PER_IMAGE = 1024
     # TRAIN_ROIS_PER_IMAGE = 200
     
     GPU_COUNT = 1
@@ -330,18 +322,18 @@ class PUConfig(Config):
     TOP_DOWN_PYRAMID_SIZE = 256
 
     USE_MINI_MASK = True
-    MINI_MASK_SHAPE = (56, 56)  # (height, width) of the mini-mask
+    MINI_MASK_SHAPE = (256, 256)  # (height, width) of the mini-mask
 
     BACKBONE = "resnet50"
 
-    IMAGE_RESIZE_MODE = "pad64"
-    IMAGE_MIN_DIM = 256
-    IMAGE_MAX_DIM = 256
+    IMAGE_RESIZE_MODE = "none"
+    IMAGE_MIN_DIM = IMAGE_MAX_DIM = 1024
 
     # IMAGE_MIN_SCALE = 0
 
- 
-    IMAGE_CHANNEL_COUNT = 3
+    MEAN_PIXEL = np.array([0.5])
+    IMAGE_CHANNEL_COUNT = 1
+
     LEARNING_RATE = 0.0001
 
     def to_txt(self, now):
@@ -356,15 +348,27 @@ class PUConfig(Config):
 
         os.system("move {} {}{}".format(filename, folder_results, folder))
         print("Config in {} folder".format(folder))
-    def form_dict(self, config_dict):
+
+    def txt_to_config(self, file):
+        cfg = {}
+        with open(file) as filin:
+            for line in filin:
+                items = line.strip().split(",",maxsplit=1)
+                key = items[0].strip()[2:-1]
+                value = items[1].strip()[:-1]
+                locals()[key] = value
+                cfg[key] = value
+        # self.NAME = "NOOOMM"
+
+
+    def from_dict(self, config_dict):
         for key in config_dict:
             self.key = config_dict[key]
 
 def main():
 
-    train_txt = "../data/train_set.txt"
-    test_txt = "../data/test_set.txt"
-    val_txt = "../data/val_set.txt"
+    train_txt = "../data/train_set_1024_con.txt"
+    val_txt = "../data/val_set_1024_con.txt"
     sword_dir = "../data/data_sword/"
 
     train_set = PUDataset()
@@ -376,9 +380,6 @@ def main():
     val_set.prepare()
 
 
-    test_set = PUDataset()
-    test_set.load_dataset(sword_dir, test_txt)
-    test_set.prepare()
 
     config = PUConfig()
 
@@ -389,21 +390,33 @@ def main():
     # # INFERENCE or TRAINING
 
     model = MaskRCNN(mode="training", model_dir='../results/', config = config )
-    # # load weights (mscoco) and exclude the output layers
-    model.load_weights('../mask_rcnn_coco.h5', by_name=True, exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",  "mrcnn_bbox", "mrcnn_mask"])
-    # folder = "sword12k__edfull20211125T0033"
-    # model.load_weights(f'../results/{folder}/mask_rcnn_sword12k_pad_full_0015.h5', by_name=True) 
-    now = datetime.datetime.now()
+    # model.save_weights('model.h5')
+    model_json = model.keras_model.to_json()
+    with open('model.json', "w") as json_file:
+        json_file.write(model_json)
+    json_file.close()
+    sys.exit()
+    # model = MaskRCNN(mode="inference", model_dir='../results/', config = config )
     
-    # # train weights (output layers or 'heads')
-    model.train(train_set, val_set, learning_rate=config.LEARNING_RATE, epochs=15,  layers='heads')
+    # folder = "real_pad_256prot_13120211224T1251"
+    # model.load_weights(f'../results/{folder}/mask_rcnn_real_pad_256prot_131_0050.h5', by_name=True) 
+    now = datetime.datetime.now()
+    model.keras_model.summary()
+    # # # train weights (output layers or 'heads')
+    model.train(train_set, val_set, learning_rate=config.LEARNING_RATE, epochs=50,  layers='all')
+
     config.to_txt(now)
  
-    # test_set.perf(model,folder, "30")
-    # train_set.perf(model,folder, "30")
+    # test_set.perf(model,folder, "50")
+    # train_set.perf(model,folder, "50")
 
 
     # print("TIME : ", time.time() - start)
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
+    
+    physical_devices = tf.config.experimental.list_physical_devices('GPU')
+    if physical_devices:
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
     main()
