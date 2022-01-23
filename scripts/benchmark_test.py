@@ -17,6 +17,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import shutil
 import copy
+import glob
+from scipy.stats import wilcoxon
+
 
 
 def get_bench_name(bench_file):
@@ -306,7 +309,9 @@ def predict_to_csv(results_per_domain, bench_name, epoch = None , list_prot = Fa
 
 
     dtf_correct = dtf["ref"] == dtf["pred"]
-
+    dtf_correct[dtf_correct == True] = 1
+    dtf_correct[dtf_correct == False] = 0
+    dtf_correct.to_csv(bench_folder + bench_name + "_correct.csv")
     # print(dtf)
     # print(dtf.sum(),dtf.shape)
     max_domain = max(dtf["ref"])
@@ -334,7 +339,7 @@ def predict_to_csv(results_per_domain, bench_name, epoch = None , list_prot = Fa
     print(f"Nb correct domain : {all_pred} / {all_ref}: {round(all_pred / all_ref * 100,2)}\n")
     print(f"Nb correct domain assignation: {nb_pred} / {nb_ref} : >{round(nb_pred / nb_ref * 100,2)}% \n\n")
     # f.close()
-    # final.to_csv(bench_folder + bench_name + ".csv")      
+    final.to_csv(bench_folder + bench_name + "_domains.csv")      
     # sns.barplot(data=dtf.T.head(10).T)
     # plt.show()
     # plt.savefig("islam.png")
@@ -374,13 +379,7 @@ def predict_all_benchmarks(epoch):
         # print(time.time() - start)
     return list_prot
 
-def print_all_csv():
-    csv_files = "../benchmarks/bench/predictions"
-    files = os.listdir(csv_files)
-    for csv in files:
-        print(csv)
-        print(pd.read_csv(f"{csv_files}/{csv}", index_col=0))
-        print()
+
 
 def compare_benchmarks(jones_islam_dict):
     jones_name = "Jones_original_clean"
@@ -442,37 +441,90 @@ def plot_results(results_dict):
     islam_results = []
     jones_label = []
     islam_label = []
+    results_jones = {}
+    results_islam = {}
+
     for bench_name in results_dict:
         if len(results_dict[bench_name]) == 2:
             if "Jones" in bench_name:
-                jones_results.append(results_dict[bench_name][1])
-                jones_label.append(bench_name)
+                results_jones[bench_name.split("_")[-1]] = results_dict[bench_name][1]
             else:
-                islam_results.append(results_dict[bench_name][1])
-                islam_label.append(bench_name)
+                results_islam[bench_name.split("_")[-1]] = results_dict[bench_name][1]
         else:
             if "Jones" in bench_name:
-                jones_results.append(results_dict[bench_name][0])
-                jones_label.append(bench_name)
+                results_jones[bench_name.split("_")[-1]] = results_dict[bench_name][0]
             else:
-                islam_results.append(results_dict[bench_name][0])
-                islam_label.append(bench_name)
+                results_islam[bench_name.split("_")[-1]] = results_dict[bench_name][0]
 
-    plot_hist(jones_label,jones_results, "../figures/Jones_ok_sol_con.png", "Jones_original_clean")
-    plot_hist(islam_label,islam_results, "../figures/Islam_ok_sol_con.png", "Islam90_original_clean")
+    plot_hist(results_jones, "../figures/Jones_ok_sol_con.png", "Jones_original_clean")
+    plot_hist(results_islam, "../figures/Islam_ok_sol_con.png", "Islam90_original_clean")
 
-def plot_hist(x,y, output, bench_name):
+def plot_hist(results, output, bench_name):
+
+    new_x = ["clean",
+            "SWORD",
+            "PDP",
+            "DP",
+            "DDScop",
+            "DDAuth",
+            "DDCath"]
+    new_results = {key:results[key] for key in new_x}
+    y = new_results.values()
+    x = list(new_results.keys())
+    x[0] = "KOPIS"
+
+    print(results)
+    print(new_results)
     length_y = len(y)
-    palette = ["green"]  + ["gray"] * (length_y - 1)
-    plt.figure(figsize=(15,15))
+    palette = ["green"]  + ["blue"] * (length_y - 1)
+    plt.figure(figsize=(20,20))
     plt.bar(range(length_y), y, color = palette)
+    colors = {'KOPIS':'green', 'Others Methods':'blue'}         
+    labels = list(colors.keys())
+    handles = [plt.Rectangle((0,0),1,1, color=colors[label]) for label in labels]
+    plt.legend(handles, labels, fontsize = 20)
     plt.ylim(0,100)
-    plt.xticks(range(length_y), x, fontsize = 20, rotation = 20)
-    plt.yticks(fontsize = 20)
+    plt.xticks(range(length_y), x, fontsize = 30)
+    plt.yticks(fontsize = 30)
     # plt.xlabel("Benchmarks")
-    plt.ylabel("Correct proposition (%)", fontsize = 15)
-    plt.title(f"Comparaison KOPIS predictions and other methods to {bench_name} benchmark", fontsize = 20)
+    plt.ylabel("Correct proposition (%)", fontsize = 25)
+    plt.xlabel("Method", fontsize = 25, labelpad=25)
+    plt.title(f"{bench_name.split('_')[0].capitalize()} benchmark results for KOPIS predictions", fontsize = 30)
     plt.savefig(output)
+
+
+
+def print_all_csv():
+    csv_files = "../benchmarks/bench/predictions"
+    files = os.listdir(csv_files)
+    for csv in files:
+        print(csv)
+        print(pd.read_csv(f"{csv_files}/{csv}", index_col=0))
+        print()
+
+def wilcoxon_test():
+    csv_folder = "../benchmarks/bench/predictions/"
+    jones = glob.glob(f"{csv_folder}Jones*correct.csv")
+    islam = glob.glob(f"{csv_folder}Islam*correct.csv")
+    jones_original = glob.glob(f"{csv_folder}Jones*ori*correct.csv")
+    islam_original = glob.glob(f"{csv_folder}Islam*ori*correct.csv")
+
+    jones_ori_dtf = pd.read_csv(jones_original[0])["0"].values
+    islam_ori_dtf = pd.read_csv(islam_original[0])["0"].values
+
+    for path in jones:
+        jones_dtf = pd.read_csv(path)["0"].values
+        if path == jones_original[0]:
+            continue
+        print(wilcoxon( jones_ori_dtf,  jones_dtf), path)
+    print()
+    for path in islam:
+        islam_dtf = pd.read_csv(path)["0"].values
+        if path == islam_original[0]:
+            continue
+        print(wilcoxon( islam_ori_dtf,  islam_dtf), path)
+
+
 
 if __name__ == "__main__":
     # pred = {"rois": [[ 92,  93, 179, 184],
@@ -493,8 +545,8 @@ if __name__ == "__main__":
     # for i in range(10,12):
     jones_islam = predict_all_benchmarks(50)
     compare_benchmarks(jones_islam) 
-
-
+    # print_all_csv()
+    # wilcoxon_test()
     # path_folder_bench = "../benchmarks/bench/"
 
 
@@ -608,5 +660,18 @@ if __name__ == "__main__":
     2                4          3  75.00
     3                3          1  33.33
     4                4          0   0.00    
+
+
+    WilcoxonResult(statistic=0.0, pvalue=0.15729920705028502) ../benchmarks/bench/predictions/Jones_PDP_correct.csv
+    WilcoxonResult(statistic=2.0, pvalue=0.5637028616507731) ../benchmarks/bench/predictions/Jones_DDAuth_correct.csv
+    WilcoxonResult(statistic=0.0, pvalue=0.31731050786291415) ../benchmarks/bench/predictions/Jones_DDScop_correct.csv
+    WilcoxonResult(statistic=0.0, pvalue=0.15729920705028502) ../benchmarks/bench/predictions/Jones_DP_correct.csv
+    WilcoxonResult(statistic=2.0, pvalue=0.5637028616507731) ../benchmarks/bench/predictions/Jones_DDCath_correct.csv
+
+    WilcoxonResult(statistic=0.0, pvalue=0.0026997960632601866) ../benchmarks/bench/predictions/Islam90_PDP_correct.csv
+    WilcoxonResult(statistic=4.0, pvalue=0.05878172135535886) ../benchmarks/bench/predictions/Islam90_DDScop_correct.csv
+    WilcoxonResult(statistic=0.0, pvalue=0.0026997960632601866) ../benchmarks/bench/predictions/Islam90_DP_correct.csv
+    WilcoxonResult(statistic=4.0, pvalue=0.05878172135535886) ../benchmarks/bench/predictions/Islam90_DDAuth_correct.csv
+    WilcoxonResult(statistic=4.0, pvalue=0.05878172135535886) ../benchmarks/bench/predictions/Islam90_DDCath_correct.csv    
     """
 

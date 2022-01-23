@@ -16,7 +16,12 @@ from mask_rcnn import *
 
 from prediction_class import *
 from benchmark_test import *
+import warnings
+warnings.filterwarnings("ignore")
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import tensorflow as tf
 
 """
 Todo : 
@@ -183,9 +188,20 @@ def write_output(predictions, full_folder, name_pdb, bench_name, best = None):
             msg = obj.get_info()
         print(msg)
         f.write(msg)
-    if best:
-        f.write(f'\nBest solution : {best}')
-        print(best)
+    best = solutions_final(predictions)
+
+    f.write(f'\nBest solution  : \n')
+    f.write(f'----------------\n')
+    for i,sol in enumerate(best):        
+        if i != 0:
+            f.write(f"\nAlternative #{i+1} : \n")
+            f.write(f'----------------\n')
+        for dom in sol:
+            f.write(f"{dom.delim[0]}-{dom.delim[1]} ")
+        f.write("\n")
+  
+
+    print(best)
     f.close()
 
 
@@ -263,8 +279,7 @@ if __name__ == "__main__":
         bench_name = None
 
     coverage_prot(predictions, bench)
-    best = solutions_final(predictions,last_pos )
-    write_output(predictions, full_folder,name_pdb, bench_name, best = best)
+    write_output(predictions, full_folder,name_pdb, bench_name)
     
     print(time.time() - start)
     # pymol.cmd.load(new_pdb_file)
