@@ -1,61 +1,21 @@
-import tensorflow as tf
+"""Script to train a MRCNN model"""
+
 import os
 import sys
-
 import numpy as np
-import pandas as pd
-import random
-import matplotlib.pyplot as plt
-
-import os
-import sys
-import copy
-from skimage.io import imread, imshow, imread_collection, concatenate_images
-from skimage.transform import resize
-
-from tensorflow.keras.layers import Conv2D, Conv2DTranspose
-from tensorflow.keras.layers import MaxPooling2D, Dense, Flatten
-from tensorflow.keras.layers import concatenate, UpSampling2D
-
-from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.layers import Input
-from tensorflow.keras.layers import Dropout, Lambda
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import Model
 import tensorflow.keras.backend as K
-from tensorflow.keras.metrics import MeanIoU
-import math
-import cv2
-
-from joblib import Parallel, delayed
-from numpy import zeros
-from numpy import asarray
-from numpy import expand_dims
-from numpy import mean
-
-
+import re
+import warnings
+warnings.filterwarnings("ignore")
 import datetime
 import time
-
-# LOSS VERY HIGH WITH THIS PATH !
-
 mrcnnpath = "../"
 sys.path.append(mrcnnpath)
 from mrcnn.model import MaskRCNN
 from mrcnn.utils import Dataset
 from mrcnn.config import Config
 from mrcnn.model import load_image_gt
-import multiprocessing as mp
-
-import re
-
-import warnings
-warnings.filterwarnings("ignore")
-
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
-import tensorflow as tf
 
 
 
@@ -73,7 +33,7 @@ class PUDataset(Dataset):
         for image_id,prot in enumerate(prot_name):
             prot = prot.strip()
             img_path = images_dir + prot  + "/file_proba_contact.mat"
-            annot_path = images_dir + prot + "/Peeling.log"
+            # annot_path = images_dir + prot + "/Peeling.log"
             annot_path = images_dir + prot + "/" + prot + ".out"
             self.add_image('dataset', image_id=image_id, path=img_path, annot = annot_path)
 
@@ -247,7 +207,7 @@ class PUDataset(Dataset):
         # load weights (mscoco) and exclude the output layers
         now = datetime.datetime.now()
 
-        model.load_weights("../results/sword_resize_heads20211121T1353/mask_rcnn_sword_resize_heads_0080.h5", by_name=True)
+        model.load_weights("../results/sword__heads20211121T1353/mask_rcnn_sword__heads_0080.h5", by_name=True)
         print(image_id)
         image, image_meta, gt_class_id, gt_bbox, gt_mask = load_image_gt(self, config, image_id)
         # image = self.load_image(image_id)
@@ -334,7 +294,7 @@ class PUConfig(Config):
 
     BACKBONE = "resnet50"
 
-    IMAGE_RESIZE_MODE = "none"
+    IMAGE__MODE = "none"
     IMAGE_MIN_DIM = IMAGE_MAX_DIM = 1024
 
     # IMAGE_MIN_SCALE = 0
@@ -357,18 +317,6 @@ class PUConfig(Config):
         os.system("move {} {}{}".format(filename, folder_results, folder))
         print("Config in {} folder".format(folder))
 
-    def txt_to_config(self, file):
-        cfg = {}
-        with open(file) as filin:
-            for line in filin:
-                items = line.strip().split(",",maxsplit=1)
-                key = items[0].strip()[2:-1]
-                value = items[1].strip()[:-1]
-                locals()[key] = value
-                cfg[key] = value
-        # self.NAME = "NOOOMM"
-
-
     def from_dict(self, config_dict):
         for key in config_dict:
             self.key = config_dict[key]
@@ -387,44 +335,16 @@ def main():
     val_set.load_dataset(sword_dir, val_txt)
     val_set.prepare()
 
-
-
     config = PUConfig()
-
     config.display()
-    print(len(train_set.image_ids))
-    print(len(val_set.image_ids))
-
-    # # INFERENCE or TRAINING
 
     model = MaskRCNN(mode="training", model_dir='../results/', config = config )
-    # model.save_weights('model.h5')
-    model_json = model.keras_model.to_json()
-    with open('model.json', "w") as json_file:
-        json_file.write(model_json)
-    json_file.close()
-    sys.exit()
-    # model = MaskRCNN(mode="inference", model_dir='../results/', config = config )
     
-    # folder = "real_pad_256prot_13120211224T1251"
-    # model.load_weights(f'../results/{folder}/mask_rcnn_real_pad_256prot_131_0050.h5', by_name=True) 
     now = datetime.datetime.now()
     model.keras_model.summary()
-    # # # train weights (output layers or 'heads')
     model.train(train_set, val_set, learning_rate=config.LEARNING_RATE, epochs=50,  layers='all')
 
     config.to_txt(now)
- 
-    # test_set.perf(model,folder, "50")
-    # train_set.perf(model,folder, "50")
-
-
-    # print("TIME : ", time.time() - start)
 
 if __name__ == "__main__": 
-    
-    physical_devices = tf.config.experimental.list_physical_devices('GPU')
-    if physical_devices:
-        tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
     main()

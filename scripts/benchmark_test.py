@@ -1,32 +1,47 @@
-from audioop import tomono
-import numpy as np
-import re
-from numpy.core.numeric import allclose
-from prediction_class import *
-from mask_rcnn import *
-from predict_pu import *
-from kopis_solutions import *
+"""Script to test KOPIS performance against Benchmarks"""
 
+import re
 import urllib.request
-import sys
 import os
 import time
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-import shutil
 import copy
 import glob
 from scipy.stats import wilcoxon
 
-
+from prediction_class import *
+from mask_rcnn import *
+from predict_pu import *
 
 def get_bench_name(bench_file):
+    """Get bench name from full path of the bench file"""
     return bench_file.split("/")[2]
 
 def get_bench(bench_file, bench_name, pdb = None, download = False, kopis = False):
-    print(bench_file, bench_name)
+    """Convert bench delimitation into a dictionnary of object Domain for each PDB code
+    Parameters
+    ----------
+    bench_file : string
+        benchmark file name
+    bench_name : string
+        benchmark name
+    pdb : string 
+        Possible name of a specific PDB code to extract frm the benchmark file
+    download : Boolean value
+        If True, it will download the PDB while reading the benchmark file
+    kopis : Boolean value
+        If True, the discontinuous delimitation from benchmark file are ignored
+        Example of delimitation ignored for KOPIS : 50-61;150-253
+
+
+    Return
+    ------
+    all_bench : dict
+        Dictionnary with PDB code as key and delimitations from benchmark, the first and last position
+        of the PDB as value
+    """
     bench_obj = []
     all_bench = {}
     delim = re.compile("(\d+)-(\d+)")
@@ -52,7 +67,6 @@ def get_bench(bench_file, bench_name, pdb = None, download = False, kopis = Fals
                 #     # shutil.rmtree(folder)
                 #     # print(folder,"deleted")
                 #     # continue
-                    # a= 0
             # else:
             #     if not os.path.exists(folder):
             #         continue       
@@ -76,6 +90,17 @@ def get_bench(bench_file, bench_name, pdb = None, download = False, kopis = Fals
 
 
 def get_size(list_domains):
+    """Get first and last position of a PDB
+    Parameters
+    ----------
+    list_domains : list
+        List of Domain object representing the delimitations of one PDB
+    
+    Return
+    ------
+    min and max : int
+        First and last position of a PDB
+    """
     all_pos = []
     for domain in list_domains:
         all_pos.append(int(domain.delim[0]))
@@ -83,6 +108,17 @@ def get_size(list_domains):
     return min(all_pos), max(all_pos)
 
 def continuous_pdb(pdb_file, chain):
+    """Check if the PDB have gaps or jumps in the residue numbering
+    Parameters
+    ----------
+    pdb_file : str
+        PDB filename to open
+    
+    Return
+    ------
+    ok : Boolean value
+        If the PDB is continuous without gap, it returns True, False otherwise
+    """
     content = []
     ok = True
     model = False
@@ -118,6 +154,20 @@ def continuous_pdb(pdb_file, chain):
     return False
 
 def coverage_prot(predictions, bench):
+    """Compute coverage of a predicted domain against the full protein
+
+    Set the coverage of the Domain object against the full protein
+    and save it in an object attribute with the set_cov_gen() method
+
+    Parameters
+    ----------
+    predictions : list
+        List of predicted delimitation of one PDB in object format (Domain)
+    bench : dict
+        Dictionnary containing the PDB code as key and the reference delimitation, the first and last position
+        as values (from get_bench())
+    
+    """
     ref1 = bench["min"]
     ref2 = bench["size"]
     prot_obj = Domain([ref1,ref2])
@@ -127,9 +177,21 @@ def coverage_prot(predictions, bench):
 
 
 def coverage_bench(predictions, bench):
+    """Compute coverage of a predicted domain against each reference delimitation
+
+    Set the coverage of the Domain object against each reference delimitation
+    and save it in an object attribute with the set_cov_bench() method
+
+    Parameters
+    ----------
+    predictions : list
+        List of predicted delimitation of one PDB in object format (Domain)
+    bench : dict
+        Dictionnary containing the PDB code as key and the reference delimitation, the first and last position
+        as values (from get_bench())
+    """
+
     bench_domain = bench["domain"]
-    size = bench["size"]
-    min =  bench["min"]
     for i in range(len(predictions)):
         for j in range(len(bench_domain)):
             bench_pred = bench_domain[j].get_coverage(predictions[i])
@@ -140,7 +202,20 @@ def coverage_bench(predictions, bench):
 
 
 def predict_full_bench(all_bench, bench_name, epoch):
-    config = PUConfig() # Todo: load model's config from folder
+    """Make prediction on all protein from a benchmark file to get all predicted delimitations
+    
+    Parameters
+    ----------
+    all_bench : Dict
+        Dictionnary containing the PDB code as key and the reference delimitation, the first and last position
+        as values (from get_bench())
+    bench_name : str
+        Benchmark name
+    epoch : int
+        Epoch to load
+    """
+
+    config = PUConfig()
     model_name = f"../results/real_pad_1024_1048/mask_rcnn_real_pad_1024prot_1048_00{epoch}.h5"
     model_pred = MaskRCNN(mode='inference', model_dir='../results/', config = config )
     model_pred.load_weights(model_name, by_name=True)   
@@ -174,18 +249,35 @@ def predict_full_bench(all_bench, bench_name, epoch):
 
 
 def benchmark_get_correct(solution_list, bench_domain, all_correct, bench_dict):
+    """Compare the predicted delimitation against the reference delimitation
+    
+    Parameters
+    ----------
+    solution_list : list
+        List of predicted solutions given by KOPIS
+    bench_domain : dict
+        Dictionnary from a benchmark file (from get_bench())
+    all_correct : int
+        global number of correct domains for KOPIS
+    bench_dict : dict
+        Dictionnary of covered domain with 1 (covered) and 0 (uncovered)
+        Used to process only uncovered domains
+
+    Return
+    ------
+    correct : int
+        Correct predictions for this PDB
+    all_correct : int
+        Global correct predictions by KOPIS
+    """
     domain_ref = bench_domain["domain"]
     size = bench_domain["size"]
     length_ref = len(domain_ref)
-    # if  length_ref == 1:
-    #     all_correct += length_ref
-    #     return [1], all_correct
     all_correct_value = []
     regex_sol = re.compile("\d+-\d+")
     for sol in solution_list: # sol in full solution list [[]]
         correct = 0
         all_sol_match = regex_sol.findall(" ".join(sol))
-        # print(sol, all_sol_match)
         if len(all_sol_match) == length_ref: # only if same nb of domain
             bench_dict = bench_to_dict(domain_ref, bench_dict) #  Flag for each true domain for cov or not
             for pred_delimitation in all_sol_match: # delim in one sol
@@ -207,11 +299,31 @@ def benchmark_get_correct(solution_list, bench_domain, all_correct, bench_dict):
             break
         else:
             all_correct += correct
-            # return [0], all_correct
     
     return all_correct_value, all_correct
 
-def bench_bench_get_correct(solution_list, bench_domain, bench_domain_size, all_correct, bench_dict):
+def bench_bench_get_correct(solution_list, bench_domain, all_correct, bench_dict):
+    """Compare the other method delimitation against reference delimitation from Jones or Islam benchmark file
+    
+    Parameters
+    ----------
+    solution_list : list
+        List of solutions given by other method
+    bench_domain : dict
+        Dictionnary from a benchmark file (from get_bench())
+    all_correct : int
+        global number of correct domains
+    bench_dict : dict
+        Dictionnary of covered domain with 1 (covered) and 0 (uncovered)
+        Used to process only uncovered domains
+    Return
+    ------
+    correct : int
+        Correct proposals for this PDB
+    all_correct : int
+        Global correct proposals for a given method
+        
+    """
     length_ref = len(bench_domain)
     correct = 0
     if len(solution_list) == length_ref == 1:
@@ -235,15 +347,32 @@ def bench_bench_get_correct(solution_list, bench_domain, bench_domain_size, all_
         all_correct += correct
         return 0, all_correct
 
-def final_output(all_bench, bench_name, epoch , list_prot = False):
+def performance_kopis(all_bench, bench_name, epoch , list_prot = False):
+    """Manage the prediction and comparaison tasks against benchmark
+
+    Parameters
+    ----------
+    all_correct : int
+        global number of correct domains
+    bench_name : str
+        Benchmark name
+    epoch : int
+        Epoch to load
+    list_prot : Boolean value
+        If True, returns the list of protein used by KOPIS for predictions (all proteins are not considered)
+        Argument for predict_to_csv() function
+    
+    Return
+    ------
+    Call predict_to_csv() to save the 
+
+    """
     nb_domain = 0
     nb_all_domain = 0
     nb_prot = 0
     all_correct = 0
     results_per_domain = {}
     bench_folder = f"../benchmarks/{bench_name}/"
-    # bench_file = f"{bench_folder}{bench_name}"
-    # all_bench = get_bench(bench_file) # dict
     all_prot = os.listdir(bench_folder)
     nb_all_prot = len(all_prot)
 
@@ -261,7 +390,6 @@ def final_output(all_bench, bench_name, epoch , list_prot = False):
             # os.system(f"cat {bench_folder}{prot}/predict.txt")
             continue
         nb_all_domain += len(all_bench[prot])
-
         bench_dict = bench_to_dict(all_bench[prot]["domain"], {}) #  Flag for each true domain for cov or not
         len_dict  = len(bench_dict)
         results_per_domain[prot] = {"ref": len_dict, "pred" : 0}
@@ -272,7 +400,6 @@ def final_output(all_bench, bench_name, epoch , list_prot = False):
         solutions = regex_solution.search("".join(content))
         f.close()
         if solutions: # Get solution list
-            regex_delim = re.compile("[(.*)]")
             solution_match = solutions.group(2)
             a = solution_match.replace("[","[\"")
             a = a.replace("]","\"]")
@@ -297,23 +424,39 @@ def final_output(all_bench, bench_name, epoch , list_prot = False):
 
 
 def predict_to_csv(results_per_domain, bench_name, epoch = None , list_prot = False):
-    bench_folder = "../benchmarks/bench/predictions/"
+    """Save the pandas dataframe of all predictions / proposals of each PDB to csv file
+    
+    Parameters
+    ----------
+    results_per_domain : dict
+        Dictionnary containing the reference number of domains
+        and the predicted number of correct domains for each PDB
+    bench_name : str
+        Benchmark name
+    Epoch : str
+        Epoch to print
+    list_prot : Boolean value
+        If True, returns the list of Proteins used for the comparaison
+    
+    Return
+    ------
+    to_return : list
+        May be one or two returns in the list
+        - The accuracy on this benchmark
+        - The list of proteins used
+    """
 
+
+    bench_folder = "../benchmarks/bench/predictions/"
     if not os.path.exists(bench_folder):
         os.mkdir(bench_folder)
-
     dtf = pd.DataFrame.from_dict(results_per_domain).T
     all_ref = dtf["ref"].sum() 
     all_pred = dtf["pred"].sum()
-        
-
-
     dtf_correct = dtf["ref"] == dtf["pred"]
     dtf_correct[dtf_correct == True] = 1
     dtf_correct[dtf_correct == False] = 0
     dtf_correct.to_csv(bench_folder + bench_name + "_correct.csv")
-    # print(dtf)
-    # print(dtf.sum(),dtf.shape)
     max_domain = max(dtf["ref"])
     ref_predictions = []
     index_dtf = []
@@ -333,12 +476,10 @@ def predict_to_csv(results_per_domain, bench_name, epoch = None , list_prot = Fa
 
     nb_ref = dtf_correct.shape[0]  
     nb_pred = dtf_correct.sum()
-    # f = open("perf.txt","a")
 
-    print(str(epoch) + " "+bench_name + "\n" )
+    print(str(epoch) + " " + bench_name + "\n" )
     print(f"Nb correct domain : {all_pred} / {all_ref}: {round(all_pred / all_ref * 100,2)}\n")
     print(f"Nb correct domain assignation: {nb_pred} / {nb_ref} : >{round(nb_pred / nb_ref * 100,2)}% \n\n")
-    # f.close()
     final.to_csv(bench_folder + bench_name + "_domains.csv")      
     # sns.barplot(data=dtf.T.head(10).T)
     # plt.show()
@@ -349,10 +490,25 @@ def predict_to_csv(results_per_domain, bench_name, epoch = None , list_prot = Fa
     return to_return
 
 
-def predict_all_benchmarks(epoch):
+def predict_all_benchmarks(epoch = 50, predict = False):
+    """Main function for predict on benchmark file and compare reference
+    domain against the predicted ones
+
+
+    Parameters
+    ----------
+    Epoch : int
+        Epoch to load (epoch 50 by default)
+    predict : Boolean
+        If True, make the prediction of all PDB code in the benchmark
+    Return
+    ------
+    list_prot : dict
+        Dictionnary of proteins used for Jones and Islam benchmark
+    """
+
     folder_bench = "../benchmarks/bench/"
     b = os.listdir(folder_bench)
-    done = ["Dissensus"]
     list_prot = {}
     for bench_name in b:
         # if bench_name == "predictions" or "Diss" in bench_name:
@@ -360,55 +516,45 @@ def predict_all_benchmarks(epoch):
         if bench_name not in ["Jones_original_clean","Islam90_original_clean"]:
             continue
         print(f"Kopis vs {bench_name}")
-        # if "Dissensus_Cath" == bench_name:
-        start = time.time()
         bench_file = f"{folder_bench}{bench_name}"
-        
-        # bench_name = get_bench_name(bench_file)
         folder_pdb = f"../benchmarks/{bench_name}/"
-
         if not os.path.exists(folder_pdb):
             os.mkdir(folder_pdb)
-
         all_bench = get_bench(bench_file, bench_name, download= False, kopis = True)
-        # if bench_name not in done:
-        #     predict_full_bench(all_bench, bench_name, epoch)
-        prot_done, pourc = final_output(all_bench, bench_name, epoch ,list_prot = True)
+        if predict:
+            predict_full_bench(all_bench, bench_name, epoch)
+        prot_done, pourc = performance_kopis(all_bench, bench_name, epoch ,list_prot = True)
         list_prot[bench_name] = [pourc, prot_done]
         
-        # print(time.time() - start)
     return list_prot
 
 
 
 def compare_benchmarks(jones_islam_dict):
-    jones_name = "Jones_original_clean"
+    """Compare the delimitations from other method against Jones or Islam benchmark delimitation
+    
+    Parameters
+    ----------
+    jones_islam_dict : dict
+        Dictionnary of protein used in both benchmark
+    
+    """
 
+        
+    jones_name = "Jones_original_clean"
     islam_name = "Islam90_original_clean"
-    Dissensus_name = "Dissensus_Cath"
 
     path_folder_bench = "../benchmarks/bench/"
     folder_bench  = os.listdir(path_folder_bench)
 
     all_bench_islam = get_bench(f"{path_folder_bench}{islam_name}",islam_name, download=False)
     all_bench_jones = get_bench(f"{path_folder_bench}{jones_name}",jones_name,download=False)
-    # all_bench_diss = get_bench(f"{path_folder_bench}{Dissensus_name}",Dissensus_name, download=False)
-
 
     all_bench_islam_crop = {prot: all_bench_islam[prot] for prot in jones_islam_dict[islam_name][0]}
     all_bench_jones_crop = {prot: all_bench_jones[prot] for prot in jones_islam_dict[jones_name][0]}
-    # all_bench_diss_crop = {prot: all_bench_jones[prot] for prot in jones_islam_dict[all_bench_diss][0]}
-
-    # all_bench_islam_crop = all_bench_islam
-    # all_bench_jones_crop = all_bench_jones
-
 
     for bench_file in folder_bench:
-
-        all = 0
         results_per_domain = {}
-
-        count = 0
         if "original" in bench_file or "Diss" in bench_file or "predictions" in bench_file:
             continue
         all_bench_tool = get_bench(f"{path_folder_bench}{bench_file}",bench_file, download=False)
@@ -428,19 +574,16 @@ def compare_benchmarks(jones_islam_dict):
 
             all_correct = 0
             correct_value = []
-            correct_value, all_correct = bench_bench_get_correct(all_bench_tool[prot]["domain"], all_bench[prot]["domain"],all_bench[prot]["size"] ,all_correct, bench_dict_ref_islam)
+            correct_value, all_correct = bench_bench_get_correct(all_bench_tool[prot]["domain"], all_bench[prot]["domain"] ,all_correct, bench_dict_ref_islam)
             results_per_domain[prot]["pred"] = correct_value
         print(f"{bench_file} vs {bench_name}")
         jones_islam_dict[bench_file] = predict_to_csv(results_per_domain,bench_file)
 
-    plot_results(jones_islam_dict)
+    data_to_plot(jones_islam_dict)
 
 
-def plot_results(results_dict):
-    jones_results = []
-    islam_results = []
-    jones_label = []
-    islam_label = []
+def data_to_plot(results_dict):
+    """Reformating data for plot"""
     results_jones = {}
     results_islam = {}
 
@@ -460,7 +603,7 @@ def plot_results(results_dict):
     plot_hist(results_islam, "../figures/Islam_ok_sol_con.png", "Islam90_original_clean")
 
 def plot_hist(results, output, bench_name):
-
+    """Plot KOPIS and other method performances against benchmarks"""
     new_x = ["clean",
             "SWORD",
             "PDP",
@@ -503,6 +646,7 @@ def print_all_csv():
         print()
 
 def wilcoxon_test():
+    """Make the wilcoxon test with csv file containing the proposals delimitations for each method"""
     csv_folder = "../benchmarks/bench/predictions/"
     jones = glob.glob(f"{csv_folder}Jones*correct.csv")
     islam = glob.glob(f"{csv_folder}Islam*correct.csv")
@@ -525,153 +669,15 @@ def wilcoxon_test():
         print(wilcoxon( islam_ori_dtf,  islam_dtf), path)
 
 
+def bench_to_dict(bench, bench_domain):
+    for domain in bench:
+        bench_domain[domain] = 1
+    return bench_domain
 
 if __name__ == "__main__":
-    # pred = {"rois": [[ 92,  93, 179, 184],
-    # [  1,   2,  91,  93],
-    # [  1,   1, 177, 178],
-        # [113, 114, 150, 149],
-        # [148, 147, 178, 179],
-    # [ 35,  34,  72,  71],
-    # [  2,   1,  36,  35],
-    # [ 76,  75, 120, 121],
-    # [ 71,  70,  98,  98]], "scores" : [0.99,0.97,0.96,0.94,0.56,0.53,0.5,0.5,0.2]}
 
-
-    """
-    Verifier que bonne taille dans mrcnn 256
-    load_image return pad et pas image !
-    """
-    # for i in range(10,12):
-    jones_islam = predict_all_benchmarks(50)
+    # Get prediction and performance for KOPIS against benchmarks
+    # Save the protein used by KOPIS and to be use by other method
+    jones_islam = predict_all_benchmarks(50, predict = False)
+    # Compare other method delimitation against benchmarks with protein used by KOPIS
     compare_benchmarks(jones_islam) 
-    # print_all_csv()
-    # wilcoxon_test()
-    # path_folder_bench = "../benchmarks/bench/"
-
-
-    # bench_name = "Jones_DP"
-    # all_bench_islam_dp = get_bench(f"{path_folder_bench}{bench_name}",bench_name, download=False)
-
-    # prot_special =   ["1LTSC",
-    #             "1PDCA",
-    #             "1PPBL",
-    #             "1TABI",
-    #             "1TFIA",
-    #             "1TGSI",
-    #             "2BDSA",
-    #             "2BPA3",
-    #             "2CBHA",
-    #             "2MEV4",
-    #             "4CPAI",
-    #             "4SGBI",
-    #             "2IFOA",
-    #             "1PPTA",
-    #             "1SISA",
-    #             "1PNHA",
-    #             "2LTNB"]
-
-
-    # islam_name = "Jones_original_clean"
-    # bench = ["Jones_DDAuth","Jones_DDCath","Jones_DDScop","Jones_DP","Jones_PDP","Jones_original_clean","SWORD_Jones"]
-
-
-    # islam_name = "Islam90_original_clean"
-    # bench = ["Islam90_DDAuth","Islam90_DDCath","Islam90_DDScop","Islam90_DP","Islam90_PDP","Islam90_original_clean","SWORD_Islam90"]
-
-
-    # all_bench_islam = get_bench(f"{path_folder_bench}{islam_name}",islam_name, download=False)
-
-
-    # for b in ["Islam90_DDScop"]  :
-    #     bad = 0
-    #     dom = 0
-    #     ok_dom = 0
-    #     p = 0
-    #     ok = 0
-    #     print(p)
-    #     all_bench_islam_dp = get_bench(f"{path_folder_bench}{b}",b, download=False)
-
-    #     for prot in all_bench_islam:
-    #         try:
-    #             all_bench_islam_dp[prot]
-    #         except:
-    #             continue
-    #         # if p >= 6:
-    #         #     break
-    #         count = 0
-    #         print(prot)
-    #         print("Ref : ",len(all_bench_islam[prot]["domain"]) , all_bench_islam[prot]["domain"], "vs", "Method : ",len(all_bench_islam_dp[prot]["domain"]), all_bench_islam_dp[prot]["domain"])
-
-    #         if len(all_bench_islam[prot]["domain"]) != len(all_bench_islam_dp[prot]["domain"]):
-    #             p += 1
-    #             print("Incorrect assignation")
-    #             print()
-    #             continue
-    #         dict_ref = bench_to_dict(all_bench_islam[prot]["domain"], {})
-
-    #         skip = False
-    #         dom += len(all_bench_islam[prot]["domain"])
-    #         if len(all_bench_islam[prot]["domain"]) == len(all_bench_islam_dp[prot]["domain"]) == 1:
-    #             count += 1
-    #             ok += 1
-    #             p += 1
-    #             print("Correct assignation")
-    #             print()
-    #             continue
-                
-    #         for pred in all_bench_islam_dp[prot]["domain"]:
-    #             for ref in all_bench_islam[prot]["domain"]:
-    #                 if dict_ref[ref]:
-    #                     uncov = ref.get_coverage(pred)
-    #                     print("Ref : {:15} Method : {:15} Cov  (1 - ({} / {})) * 100 = {:5.2f}".format(ref.name,pred.name,ref.get_coverage(pred),all_bench_islam[prot]["size"],float(uncov)))            
-
-    #                     if uncov >= 84:                    
-    #                         count += 1
-    #                         dict_ref[ref] = 0
-    #                         break            
-    #         if count == len(all_bench_islam[prot]["domain"]):
-    #             print("Correct assignation")
-    #             print(len(all_bench_islam[prot]["domain"]) ,len(all_bench_islam_dp[prot]["domain"]))
-    #             ok+= 1
-    #         else:
-    #             print("Incorrect assignation")
-    #             print(len(all_bench_islam[prot]["domain"]) ,count)
-
-    #         print()
-    #         ok_dom += count
-    #         p += 1
-
-
-    #         print()
-
-    #     print(ok,"/",p, "=", ok /  p * 100 , "%", b)
-    #     # print_all_csv()
-    
-    """
-    Bench :  Jones_original_clean
-    Nb correct domain : 19 / 30
-    Nb domain tested : 30 / 106
-    Nb prot tested : 23 / 55
-
-            Reference  Predicted      %
-    Domains
-    1               19         14  73.68
-    2                4          3  75.00
-    3                3          1  33.33
-    4                4          0   0.00    
-
-
-    WilcoxonResult(statistic=0.0, pvalue=0.15729920705028502) ../benchmarks/bench/predictions/Jones_PDP_correct.csv
-    WilcoxonResult(statistic=2.0, pvalue=0.5637028616507731) ../benchmarks/bench/predictions/Jones_DDAuth_correct.csv
-    WilcoxonResult(statistic=0.0, pvalue=0.31731050786291415) ../benchmarks/bench/predictions/Jones_DDScop_correct.csv
-    WilcoxonResult(statistic=0.0, pvalue=0.15729920705028502) ../benchmarks/bench/predictions/Jones_DP_correct.csv
-    WilcoxonResult(statistic=2.0, pvalue=0.5637028616507731) ../benchmarks/bench/predictions/Jones_DDCath_correct.csv
-
-    WilcoxonResult(statistic=0.0, pvalue=0.0026997960632601866) ../benchmarks/bench/predictions/Islam90_PDP_correct.csv
-    WilcoxonResult(statistic=4.0, pvalue=0.05878172135535886) ../benchmarks/bench/predictions/Islam90_DDScop_correct.csv
-    WilcoxonResult(statistic=0.0, pvalue=0.0026997960632601866) ../benchmarks/bench/predictions/Islam90_DP_correct.csv
-    WilcoxonResult(statistic=4.0, pvalue=0.05878172135535886) ../benchmarks/bench/predictions/Islam90_DDAuth_correct.csv
-    WilcoxonResult(statistic=4.0, pvalue=0.05878172135535886) ../benchmarks/bench/predictions/Islam90_DDCath_correct.csv    
-    """
-
