@@ -1,0 +1,12 @@
+Predictions for 2RN2A
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 153) 	1.0  	98.04          		[('1', '154')]		[98.0392156862745]
+(0, 70) 	0.97 	44.81          		[]				[]
+(46, 124) 	0.86 	50.98          		[]				[]
+(122, 155) 	0.85 	20.78          		[]				[]
+(74, 111) 	0.68 	24.18          		[]				[]
+
+Best solution : [[3-153], [0-70, 46-124], [0-70, 46-124, 122-155], [0-70, 46-124, 74-111]]

@@ -1,0 +1,13 @@
+Predictions for 5P21A
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 167) 	1.0  	98.2           		[('1', '165')]		[98.20359281437125]
+(72, 160) 	0.98 	53.66          		[]				[]
+(0, 72) 	0.97 	43.03          		[]				[]
+(111, 167) 	0.76 	32.53          		[]				[]
+(64, 118) 	0.56 	32.93          		[]				[]
+(29, 65) 	0.53 	21.95          		[]				[]
+
+Best solution : [[0-167], [0-72, 72-160], [64-118, 72-160], [29-65, 64-118, 72-160]]

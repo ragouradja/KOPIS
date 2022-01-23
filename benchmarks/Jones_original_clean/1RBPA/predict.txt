@@ -1,0 +1,13 @@
+Predictions for 1RBPA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 174) 	0.99 	98.85          		[('1', '173')]		[98.85057471264368]
+(101, 173) 	0.97 	41.86          		[]				[]
+(0, 86) 	0.95 	49.13          		[]				[]
+(39, 100) 	0.76 	35.47          		[]				[]
+(1, 48) 	0.74 	27.33          		[]				[]
+(82, 148) 	0.54 	38.37          		[]				[]
+
+Best solution : [[0-174], [0-86, 101-173], [0-86, 39-100, 101-173], [1-48, 39-100, 101-173], [0-86, 82-148]]

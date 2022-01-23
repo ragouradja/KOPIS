@@ -1,0 +1,11 @@
+Predictions for 1OFVA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 172) 	1.0  	97.09          		[('1', '168')]		[97.09302325581395]
+(71, 165) 	0.95 	56.29          		[]				[]
+(0, 86) 	0.86 	50.6           		[]				[]
+(136, 169) 	0.76 	19.05          		[]				[]
+
+Best solution : [[0-172], [0-86, 71-165], [0-86, 71-165, 136-169]]

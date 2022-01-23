@@ -1,0 +1,12 @@
+Predictions for 3CD4A
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 177) 	0.99 	98.88          		[]				[]
+(2, 92) 	0.98 	50.85          		[('1', '98')]		[92.78350515463917]
+(89, 175) 	0.98 	48.59          		[('99', '178')]		[85.39325842696628]
+(24, 69) 	0.66 	25.42          		[]				[]
+(2, 32) 	0.55 	16.95          		[]				[]
+
+Best solution : [[0-177], [2-92, 89-175], [2-32, 2-92, 89-175]]

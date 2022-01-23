@@ -1,0 +1,13 @@
+Predictions for 3DFRA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 161) 	1.0  	99.38          		[('1', '161')]		[99.37888198757764]
+(98, 163) 	0.98 	38.89          		[]				[]
+(0, 86) 	0.88 	52.8           		[]				[]
+(2, 35) 	0.79 	20.63          		[]				[]
+(36, 96) 	0.68 	37.5           		[]				[]
+(128, 163) 	0.51 	20.37          		[]				[]
+
+Best solution : [[0-161], [0-86, 98-163], [0-86, 2-35, 98-163], [2-35, 36-96, 98-163], [0-86, 2-35, 128-163]]

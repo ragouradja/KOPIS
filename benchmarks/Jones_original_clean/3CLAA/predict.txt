@@ -1,0 +1,13 @@
+Predictions for 3CLAA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(5, 221) 	1.0  	94.09          		[('1', '212')]		[94.0909090909091]
+(141, 216) 	0.97 	33.02          		[]				[]
+(60, 142) 	0.97 	38.86          		[]				[]
+(5, 65) 	0.87 	28.44          		[]				[]
+(6, 38) 	0.76 	15.17          		[]				[]
+(188, 218) 	0.71 	11.06          		[]				[]
+
+Best solution : [[5-221], [5-65, 60-142, 141-216], [6-38, 60-142, 141-216], [5-65, 60-142, 141-216, 188-218]]

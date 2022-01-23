@@ -1,0 +1,11 @@
+Predictions for 2GMFA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 126) 	1.0  	97.62          		[('1', '127')]		[97.61904761904762]
+(92, 124) 	0.89 	25.4           		[]				[]
+(5, 35) 	0.66 	23.81          		[]				[]
+(32, 100) 	0.66 	53.97          		[]				[]
+
+Best solution : [[3-126], [5-35, 32-100, 92-124]]

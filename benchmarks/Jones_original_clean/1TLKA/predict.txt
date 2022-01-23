@@ -1,0 +1,8 @@
+Predictions for 1TLKA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(32, 136) 	1.0  	51.85          		[]				[]
+(107, 135) 	0.85 	-3.73          		[]				[]
+(34, 67) 	0.68 	32.67          		[]				[]

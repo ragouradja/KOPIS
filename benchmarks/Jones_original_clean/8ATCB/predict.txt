@@ -1,0 +1,12 @@
+Predictions for 8ATCB
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(7, 152) 	1.0  	99.31          		[]				[]
+(101, 154) 	0.97 	34.93          		[('101', '152')]		[96.22641509433963]
+(8, 75) 	0.95 	46.53          		[]				[]
+(67, 145) 	0.69 	54.17          		[]				[]
+(66, 98) 	0.67 	22.22          		[]				[]
+
+Best solution : [[7-152], [8-75, 67-145], [8-75, 66-98, 101-154]]
