@@ -1,0 +1,9 @@
+Predictions for 1ONCA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 104) 	1.0  	99.03          		[('1', '103')]		[99.02912621359224]
+(49, 103) 	0.74 	52.94          		[]				[]
+
+Best solution : [[1-104]]

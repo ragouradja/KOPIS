@@ -1,0 +1,10 @@
+Predictions for 4MT2A
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 61) 	1.0  	98.36          		[]				[]
+(35, 62) 	0.96 	42.62          		[('32', '61')]		[86.66666666666667]
+(3, 34) 	0.6  	51.67          		[]				[]
+
+Best solution : [[0-61], [3-34, 35-62]]

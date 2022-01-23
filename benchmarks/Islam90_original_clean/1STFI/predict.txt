@@ -1,0 +1,10 @@
+Predictions for 1STFI
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(5, 104) 	1.0  	87.38          		[('1', '95')]		[87.37864077669903]
+(56, 103) 	0.89 	38.24          		[]				[]
+(7, 59) 	0.74 	55.32          		[]				[]
+
+Best solution : [[5-104], [7-59, 56-103]]

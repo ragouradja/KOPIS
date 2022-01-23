@@ -1,0 +1,10 @@
+Predictions for 1CLLA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(4, 150) 	1.0  	97.95          		[]				[]
+(3, 80) 	0.97 	52.78          		[]				[]
+(83, 147) 	0.97 	44.76          		[('92', '147')]		[85.9375]
+
+Best solution : [[4-150], [3-80, 83-147]]

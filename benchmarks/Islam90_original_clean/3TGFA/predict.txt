@@ -1,0 +1,8 @@
+Predictions for 3TGFA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 52) 	0.97 	94.23          		[('1', '50')]		[94.23076923076923]
+
+Best solution : [[0-52]]

@@ -1,0 +1,6 @@
+Predictions for 1LTSC
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(203, 237) 	0.98 	80.49          		[]				[]

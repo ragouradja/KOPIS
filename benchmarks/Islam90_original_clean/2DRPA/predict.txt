@@ -1,0 +1,9 @@
+Predictions for 2DRPA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(103, 164) 	1.0  	98.39          		[]				[]
+(137, 166) 	0.95 	44.44          		[('139', '165')]		[89.65517241379311]
+
+Best solution : [[103-164]]

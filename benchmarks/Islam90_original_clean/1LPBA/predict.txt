@@ -1,0 +1,10 @@
+Predictions for 1LPBA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(6, 91) 	1.0  	87.78          		[('1', '85')]		[87.77777777777777]
+(49, 90) 	0.88 	40.45          		[]				[]
+(6, 54) 	0.51 	57.14          		[]				[]
+
+Best solution : [[6-91], [6-54, 49-90]]

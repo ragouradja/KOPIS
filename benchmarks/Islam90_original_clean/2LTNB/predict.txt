@@ -1,0 +1,8 @@
+Predictions for 2LTNB
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 48) 	1.0  	95.74          		[('1', '47')]		[95.74468085106383]
+
+Best solution : [[2-48]]

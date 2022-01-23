@@ -1,0 +1,10 @@
+Predictions for 1PKPA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 147) 	1.0  	98.62          		[]				[]
+(78, 147) 	0.98 	47.92          		[('76', '148')]		[95.83333333333334]
+(3, 73) 	0.98 	47.59          		[('4', '75')]		[95.83333333333334]
+
+Best solution : [[3-147], [3-73, 78-147]]

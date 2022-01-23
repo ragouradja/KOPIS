@@ -1,0 +1,10 @@
+Predictions for 1PIHA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 73) 	1.0  	97.26          		[('1', '72')]		[97.26027397260275]
+(33, 73) 	0.87 	54.17          		[]				[]
+(2, 36) 	0.65 	47.89          		[]				[]
+
+Best solution : [[0-73], [2-36, 33-73]]

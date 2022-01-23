@@ -1,0 +1,13 @@
+Predictions for 3CLAA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(5, 221) 	1.0  	98.61          		[('6', '219')]		[98.61111111111111]
+(141, 216) 	0.97 	35.21          		[]				[]
+(60, 142) 	0.97 	38.5           		[]				[]
+(5, 65) 	0.87 	27.57          		[]				[]
+(6, 38) 	0.76 	15.02          		[]				[]
+(188, 218) 	0.71 	14.08          		[]				[]
+
+Best solution : [[5-221], [5-65, 60-142, 141-216], [6-38, 60-142, 141-216], [60-142, 141-216, 188-218]]

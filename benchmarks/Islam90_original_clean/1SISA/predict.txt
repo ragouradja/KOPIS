@@ -1,0 +1,5 @@
+Predictions for 1SISA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov

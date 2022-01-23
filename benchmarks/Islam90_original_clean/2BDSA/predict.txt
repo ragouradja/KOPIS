@@ -1,0 +1,6 @@
+Predictions for 2BDSA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(7, 45) 	0.99 	81.82          		[]				[]

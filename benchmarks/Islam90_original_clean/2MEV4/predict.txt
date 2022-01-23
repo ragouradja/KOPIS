@@ -1,0 +1,10 @@
+Predictions for 2MEV4
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(12, 71) 	1.0  	96.61          		[('13', '70')]		[96.61016949152543]
+(45, 70) 	0.94 	43.86          		[]				[]
+(14, 45) 	0.68 	54.39          		[]				[]
+
+Best solution : [[12-71], [14-45, 45-70]]

@@ -1,0 +1,10 @@
+Predictions for 9RNTA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 104) 	1.0  	99.04          		[('1', '104')]		[99.03846153846155]
+(51, 103) 	0.81 	50.49          		[]				[]
+(73, 105) 	0.5  	29.81          		[]				[]
+
+Best solution : [[0-104]]

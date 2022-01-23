@@ -1,0 +1,6 @@
+Predictions for 1PDCA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(-2, 41) 	1.0  	84.09          		[]				[]
