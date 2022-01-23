@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from matplotlib import patches,  lines
 from matplotlib.patches import Polygon
 import IPython.display
-
+import matplotlib
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
 
@@ -80,7 +80,7 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(image, boxes, masks, class_ids, class_names,
+def display_instances(image, boxes, masks, class_ids, class_names,true_shape,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
                       show_mask=True, show_bbox=True,
@@ -114,7 +114,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     colors = colors or random_colors(N)
 
     # Show area outside image boundaries.
-    height, width = image.shape[:2]
+    height, width = true_shape,true_shape
     ax.set_ylim(height + 10, -10)
     ax.set_xlim(-10, width + 10)
     ax.axis('off')
@@ -259,7 +259,7 @@ def draw_rois(image, rois, refined_rois, mask, class_ids, class_names, limit=10)
                                   [:4].astype(np.int32), image.shape)
             masked_image = apply_mask(masked_image, m, color)
 
-    ax.imshow(masked_image)
+    ax.imshow( 1 -masked_image)
 
     # Print stats
     print("Positive ROIs: ", class_ids[class_ids > 0].shape[0])
@@ -449,7 +449,7 @@ def draw_boxes(image, boxes=None, refined_boxes=None,
             # Mask Polygon
             # Pad to ensure proper polygons for masks that touch image edges.
             padded_mask = np.zeros(
-                (mask.shape[0] + 2, mask.shape[1] + 2), dtype=np.uint8)
+                (mask.shape[0] + 2, mask.shape[1] + 2), dtype=np.float32)
             padded_mask[1:-1, 1:-1] = mask
             contours = find_contours(padded_mask, 0.5)
             for verts in contours:
@@ -457,8 +457,9 @@ def draw_boxes(image, boxes=None, refined_boxes=None,
                 verts = np.fliplr(verts) - 1
                 p = Polygon(verts, facecolor="none", edgecolor=color)
                 ax.add_patch(p)
-    ax.imshow(masked_image.astype(np.uint8))
-
+    ax.imshow(masked_image.astype(np.float32), cmap = "gray", origin = "lower")
+    
+    
 
 def display_table(table):
     """Display values in a table format.
