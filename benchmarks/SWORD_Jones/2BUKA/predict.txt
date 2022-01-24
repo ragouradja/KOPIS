@@ -1,0 +1,13 @@
+Predictions for 2BUKA
+
+Benchmark Jones_PDP
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(11, 208) 	0.98 	94.87          		[('12', '184')]		[100.0]
+(12, 70) 	0.93 	30.26          		[]				[]
+(150, 196) 	0.92 	23.59          		[]				[]
+(135, 168) 	0.89 	17.44          		[]				[]
+(77, 139) 	0.77 	32.31          		[]				[]
+(127, 152) 	0.77 	13.33          		[]				[]
+
+Best solution : [[11-208], [12-70, 77-139, 135-168, 150-196]]

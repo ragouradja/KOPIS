@@ -1,0 +1,10 @@
+Predictions for 1UTGA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 70) 	1.0  	100.0          		[('1', '70')]		[100.0]
+(41, 69) 	0.98 	41.43          		[]				[]
+(2, 38) 	0.97 	52.86          		[]				[]
+
+Best solution : [[1-70], [2-38, 41-69]]

@@ -1,0 +1,14 @@
+Predictions for 1TIEA
+
+Benchmark Jones_PDP
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 169) 	0.99 	99.41          		[('1', '166')]		[100.0]
+(115, 167) 	0.92 	31.18          		[]				[]
+(5, 52) 	0.82 	28.24          		[]				[]
+(109, 137) 	0.76 	17.06          		[]				[]
+(54, 111) 	0.67 	34.12          		[]				[]
+(50, 80) 	0.54 	18.24          		[]				[]
+(81, 115) 	0.5  	20.59          		[]				[]
+
+Best solution : [[0-169], [5-52, 54-111, 109-137, 115-167], [50-80, 115-167]]

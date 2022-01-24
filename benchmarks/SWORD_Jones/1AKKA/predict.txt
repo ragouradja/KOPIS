@@ -1,0 +1,13 @@
+Predictions for 1AKKA
+
+Benchmark Jones_PDP
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 105) 	1.0  	100.0          		[('1', '104')]		[100.0]
+(64, 104) 	0.97 	39.42          		[]				[]
+(33, 76) 	0.91 	42.31          		[]				[]
+(1, 36) 	0.87 	34.62          		[]				[]
+(47, 92) 	0.78 	44.23          		[]				[]
+(8, 55) 	0.59 	46.15          		[]				[]
+
+Best solution : [[0-105], [1-36, 33-76, 64-104], [8-55, 47-92, 64-104]]

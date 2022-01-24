@@ -1,0 +1,10 @@
+Predictions for 451CA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 85) 	1.0  	100.0          		[('1', '82')]		[100.0]
+(36, 83) 	0.98 	57.32          		[]				[]
+(2, 34) 	0.92 	40.24          		[]				[]
+
+Best solution : [[0-85], [2-34, 36-83]]

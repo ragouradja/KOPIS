@@ -1,0 +1,12 @@
+Predictions for 1TLKA
+
+Benchmark Jones_PDP
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(32, 137) 	1.0  	77.04          		[]				[]
+(105, 135) 	0.96 	22.96          		[]				[]
+(71, 104) 	0.96 	25.19          		[]				[]
+(34, 69) 	0.87 	26.67          		[]				[]
+(81, 137) 	0.73 	40.74          		[]				[]
+
+Best solution : [[32-137, 105-135], [34-69, 71-104]]

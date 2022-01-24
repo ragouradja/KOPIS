@@ -1,0 +1,10 @@
+Predictions for 1HYPA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(5, 81) 	1.0  	95.0           		[('1', '75')]		[94.67]
+(40, 81) 	0.99 	51.25          		[]				[]
+(6, 40) 	0.93 	43.75          		[]				[]
+
+Best solution : [[5-81], [6-40, 40-81]]

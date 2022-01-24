@@ -1,0 +1,13 @@
+Predictions for 1SNCA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(6, 142) 	1.0  	96.45          		[('1', '135')]		[96.3]
+(100, 142) 	0.97 	29.79          		[]				[]
+(66, 99) 	0.95 	24.11          		[]				[]
+(7, 66) 	0.87 	42.55          		[]				[]
+(65, 139) 	0.8  	53.19          		[]				[]
+(76, 112) 	0.56 	26.24          		[]				[]
+
+Best solution : [[6-142], [7-66, 66-99, 100-142], [7-66, 65-139], [76-112, 100-142]]

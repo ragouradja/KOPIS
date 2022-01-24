@@ -1,0 +1,8 @@
+Predictions for 2IFOA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 47) 	1.0  	95.65          		[('1', '46')]		[95.65]
+
+Best solution : [[3-47]]

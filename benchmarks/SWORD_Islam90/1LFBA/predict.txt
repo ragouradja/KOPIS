@@ -1,0 +1,10 @@
+Predictions for 1LFBA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(12, 88) 	1.0  	85.56          		[('1', '78')]		[85.9]
+(48, 88) 	0.97 	45.56          		[]				[]
+(13, 48) 	0.92 	40.0           		[]				[]
+
+Best solution : [[12-88], [13-48, 48-88]]

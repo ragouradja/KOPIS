@@ -1,0 +1,8 @@
+Predictions for 1PDCA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(-4, 43) 	1.0  	100.0          		[('1', '45')]		[95.56]
+
+Best solution : [[-4-43]]

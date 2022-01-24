@@ -1,0 +1,13 @@
+Predictions for 1LISA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 137) 	1.0  	98.51          		[('1', '131')]		[98.47]
+(101, 135) 	0.97 	25.37          		[]				[]
+(61, 96) 	0.96 	26.87          		[]				[]
+(4, 56) 	0.87 	39.55          		[]				[]
+(73, 107) 	0.63 	26.12          		[]				[]
+(51, 84) 	0.58 	25.37          		[]				[]
+
+Best solution : [[3-137], [4-56, 61-96, 101-135], [73-107, 101-135], [4-56, 51-84]]

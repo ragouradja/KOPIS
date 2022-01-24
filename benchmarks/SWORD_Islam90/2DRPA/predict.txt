@@ -1,0 +1,13 @@
+Predictions for 2DRPA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 129) 	1.0  	77.11          		[('1', '63')]		[98.41]
+(95, 128) 	0.96 	20.48          		[]				[]
+(60, 94) 	0.93 	21.08          		[]				[]
+(33, 64) 	0.93 	19.28          		[]				[]
+(61, 127) 	0.91 	40.36          		[]				[]
+(1, 36) 	0.88 	21.69          		[]				[]
+(4, 60) 	0.81 	34.34          		[('1', '63')]		[90.48]
+(37, 90) 	0.8  	32.53          		[]				[]

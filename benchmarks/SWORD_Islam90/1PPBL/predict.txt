@@ -1,0 +1,8 @@
+Predictions for 1PPBL
+
+Benchmark Islam90_original
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 37) 	0.97 	100.0          		[('1', '15')]		[100.0]
+
+Best solution : [[1-37]]
