@@ -1,13 +1,13 @@
-name: peel
+name: kopis
 channels:
         - defaults
+        - conda-forge
 dependencies:
         - python=3.8
         - numpy=1.20.3
         - pandas=1.2.4
         - scipy=1.6.2
-        - joblib=1.0.1
         - matplotlib
-        - tensorflow
-        - pip3:
-          - fiftyone
+        - scikit-image=0.18.3
+        - pip:
+            - tensorflow==2.5
