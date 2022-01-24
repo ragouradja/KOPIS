@@ -28,7 +28,6 @@ from benchmark_test import *
 import warnings
 warnings.filterwarnings("ignore")
 
-
 def get_args():
     """Function to get all args
     Arguments
@@ -77,7 +76,7 @@ def get_args():
     else: # Download PDB file
         try:
             if "pdb" not in pdb:
-                args.p = pdb = pdb + ".pdb"
+                args.p = pdb = pdb.upper() + ".pdb"
             urllib.request.urlretrieve(f'https://files.rcsb.org/download/{pdb}', f'{pdb}')
             print(pdb, "downloaded")
         except:
@@ -196,7 +195,6 @@ def write_output(predictions, full_folder, name_pdb, bench_name, best = None):
             msg = obj.get_info_bench()
         else:
             msg = obj.get_info()
-        print(msg)
         f.write(msg)
     best = solutions_final(predictions)
 
@@ -209,9 +207,6 @@ def write_output(predictions, full_folder, name_pdb, bench_name, best = None):
         for dom in sol:
             f.write(f"{dom.delim[0]}-{dom.delim[1]} ")
         f.write("\n")
-  
-
-    print(best)
     f.close()
 
 
@@ -309,7 +304,6 @@ def solutions_final(pred):
     return all_solution
 
 if __name__ == "__main__":
-    start = time.time()
     args = get_args()
     pdb_file = args.p # file.pdb
     model_name = args.m
@@ -359,7 +353,6 @@ if __name__ == "__main__":
     coverage_prot(predictions, bench)
     write_output(predictions, full_folder,name_pdb, bench_name)
     
-    print(time.time() - start)
     # pymol.cmd.load(new_pdb_file)
     # pymol.cmd.remove("solvent")
     # color_PU(results, first_pos)
