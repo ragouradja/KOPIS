@@ -1,0 +1,11 @@
+Predictions for 4GCRA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 190) 	0.99 	91.05          		[]				[]
+(91, 180) 	0.98 	46.37          		[('84', '174')]		[86.45833333333334]
+(2, 92) 	0.96 	52.02          		[('1', '83')]		[89.01098901098901]
+(129, 185) 	0.72 	24.46          		[]				[]
+
+Best solution : [[0-190], [2-92, 91-180]]

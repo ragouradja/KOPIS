@@ -1,0 +1,6 @@
+Predictions for 1PPBL
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 37) 	0.97 	38.89          		[]				[]

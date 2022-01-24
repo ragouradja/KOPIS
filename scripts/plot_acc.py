@@ -1,3 +1,4 @@
+"""Plotting the accuracy by epoch using the epoch.txt file"""
 import matplotlib.pyplot as plt
 
 

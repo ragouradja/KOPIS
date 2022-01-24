@@ -1,0 +1,13 @@
+Predictions for 2TMVP
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 155) 	1.0  	100.0          		[('1', '153')]		[100.0]
+(0, 81) 	0.96 	52.94          		[]				[]
+(75, 149) 	0.93 	49.02          		[]				[]
+(124, 154) 	0.85 	19.61          		[]				[]
+(2, 40) 	0.69 	25.49          		[]				[]
+(81, 118) 	0.64 	24.84          		[]				[]
+
+Best solution : [[1-155], [0-81, 75-149], [0-81, 75-149, 124-154], [0-81, 2-40, 75-149], [0-81, 75-149, 81-118]]

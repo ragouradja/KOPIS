@@ -1,0 +1,13 @@
+Predictions for 2BUKA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(12, 198) 	1.0  	93.4           		[('1', '196')]		[93.4010152284264]
+(11, 84) 	0.93 	37.44          		[]				[]
+(143, 195) 	0.77 	26.67          		[]				[]
+(74, 151) 	0.72 	39.49          		[]				[]
+(14, 51) 	0.56 	18.97          		[]				[]
+(99, 193) 	0.53 	48.21          		[]				[]
+
+Best solution : [[12-198], [11-84, 74-151, 143-195], [14-51, 74-151, 143-195], [11-84, 99-193]]

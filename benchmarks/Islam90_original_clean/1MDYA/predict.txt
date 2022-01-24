@@ -1,0 +1,10 @@
+Predictions for 1MDYA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 68) 	1.0  	98.53          		[('1', '68')]		[98.52941176470588]
+(36, 68) 	0.97 	47.76          		[]				[]
+(2, 35) 	0.79 	49.25          		[]				[]
+
+Best solution : [[0-68], [2-35, 36-68]]

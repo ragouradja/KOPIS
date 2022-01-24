@@ -1,0 +1,12 @@
+Predictions for 2CCYA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 129) 	1.0  	97.66          		[('1', '126')]		[97.65625]
+(3, 58) 	0.84 	44.0           		[]				[]
+(86, 129) 	0.82 	31.25          		[]				[]
+(44, 103) 	0.66 	47.2           		[]				[]
+(106, 128) 	0.56 	15.75          		[]				[]
+
+Best solution : [[1-129], [3-58, 44-103], [3-58, 44-103, 106-128]]

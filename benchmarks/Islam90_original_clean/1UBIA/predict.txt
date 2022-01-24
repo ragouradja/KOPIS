@@ -1,0 +1,9 @@
+Predictions for 1UBIA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 77) 	1.0  	98.68          		[('1', '76')]		[98.68421052631578]
+(38, 76) 	0.9  	50.67          		[]				[]
+
+Best solution : [[1-77]]

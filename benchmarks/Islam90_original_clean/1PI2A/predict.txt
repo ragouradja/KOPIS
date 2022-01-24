@@ -1,0 +1,9 @@
+Predictions for 1PI2A
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 63) 	1.0  	93.44          		[('3', '60')]		[93.44262295081968]
+(33, 64) 	0.88 	44.26          		[]				[]
+
+Best solution : [[2-63]]

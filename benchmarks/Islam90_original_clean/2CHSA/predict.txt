@@ -1,0 +1,11 @@
+Predictions for 2CHSA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 116) 	1.0  	98.26          		[('1', '114')]		[98.26086956521739]
+(87, 115) 	0.93 	23.68          		[]				[]
+(34, 85) 	0.6  	45.13          		[]				[]
+(99, 114) 	0.55 	13.27          		[]				[]
+
+Best solution : [[1-116]]

@@ -1,0 +1,10 @@
+Predictions for 1PYAA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 81) 	1.0  	100.0          		[('1', '81')]		[100.0]
+(43, 81) 	0.97 	47.5           		[]				[]
+(4, 43) 	0.86 	48.75          		[]				[]
+
+Best solution : [[1-81], [4-43, 43-81]]

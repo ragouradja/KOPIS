@@ -1,0 +1,11 @@
+Predictions for 8ATCB
+
+Benchmark Jones_original
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(7, 154) 	1.0  	96.08          		[('8', '97'), ('101', '152')]	[100.0, 100.0]
+(100, 155) 	0.98 	35.29          		[('101', '152')]		[100.0]
+(8, 68) 	0.96 	39.87          		[]				[]
+(66, 101) 	0.94 	23.53          		[]				[]
+(69, 141) 	0.56 	47.71          		[]				[]
+(100, 129) 	0.53 	19.61          		[]				[]

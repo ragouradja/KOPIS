@@ -1,0 +1,8 @@
+Predictions for 4SGBI
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 51) 	1.0  	100.0          		[('1', '51')]		[100.0]
+
+Best solution : [[1-51]]

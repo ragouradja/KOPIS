@@ -1,0 +1,12 @@
+Predictions for 3CHYA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 130) 	1.0  	97.67          		[('1', '127')]		[97.67441860465115]
+(1, 74) 	0.97 	57.94          		[]				[]
+(74, 129) 	0.94 	41.41          		[]				[]
+(38, 111) 	0.7  	57.94          		[]				[]
+(3, 40) 	0.55 	29.37          		[]				[]
+
+Best solution : [[1-130], [1-74, 74-129], [1-74, 38-111], [3-40, 38-111, 74-129]]

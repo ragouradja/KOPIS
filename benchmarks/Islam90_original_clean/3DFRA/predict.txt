@@ -1,0 +1,13 @@
+Predictions for 3DFRA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 161) 	1.0  	98.77          		[('1', '162')]		[98.76543209876543]
+(98, 163) 	0.98 	39.51          		[]				[]
+(0, 86) 	0.88 	52.47          		[]				[]
+(2, 35) 	0.79 	20.5           		[]				[]
+(36, 96) 	0.68 	37.27          		[]				[]
+(128, 163) 	0.51 	20.99          		[]				[]
+
+Best solution : [[0-161], [0-86, 98-163], [0-86, 2-35, 98-163], [2-35, 36-96, 98-163], [0-86, 2-35, 128-163]]

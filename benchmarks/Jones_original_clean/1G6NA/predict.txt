@@ -1,0 +1,13 @@
+Predictions for 1G6NA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(11, 207) 	0.99 	94.69          		[]				[]
+(7, 112) 	0.99 	50.72          		[]				[]
+(128, 206) 	0.98 	37.68          		[]				[]
+(175, 207) 	0.63 	15.46          		[]				[]
+(38, 92) 	0.59 	26.09          		[]				[]
+(8, 41) 	0.51 	15.94          		[]				[]
+
+Best solution : [[11-207], [7-112, 128-206], [7-112, 128-206, 175-207], [7-112, 8-41, 128-206]]

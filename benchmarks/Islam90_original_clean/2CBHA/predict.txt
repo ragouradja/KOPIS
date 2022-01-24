@@ -1,0 +1,8 @@
+Predictions for 2CBHA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 38) 	0.96 	91.89          		[('1', '36')]		[91.89189189189189]
+
+Best solution : [[2-38]]

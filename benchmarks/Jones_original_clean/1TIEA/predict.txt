@@ -1,0 +1,12 @@
+Predictions for 1TIEA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 169) 	1.0  	97.04          		[('1', '165')]		[97.0414201183432]
+(103, 165) 	0.91 	37.8           		[]				[]
+(4, 63) 	0.8  	35.98          		[]				[]
+(33, 111) 	0.74 	47.56          		[]				[]
+(57, 144) 	0.57 	53.05          		[]				[]
+
+Best solution : [[0-169], [33-111, 103-165], [57-144, 103-165]]

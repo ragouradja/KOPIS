@@ -1,0 +1,10 @@
+Predictions for 1TVSA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 77) 	1.0  	96.05          		[('1', '75')]		[96.05263157894737]
+(46, 75) 	0.93 	39.19          		[]				[]
+(2, 39) 	0.88 	50.0           		[]				[]
+
+Best solution : [[2-77], [2-39, 46-75]]

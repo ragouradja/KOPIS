@@ -1,0 +1,9 @@
+Predictions for 1UTGA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 68) 	1.0  	95.71          		[('1', '70')]		[95.71428571428572]
+(42, 70) 	0.89 	40.58          		[]				[]
+
+Best solution : [[0-68]]

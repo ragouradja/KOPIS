@@ -1,0 +1,12 @@
+Predictions for 2CPLA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 164) 	1.0  	98.78          		[('2', '165')]		[98.78048780487805]
+(42, 132) 	0.93 	55.21          		[]				[]
+(136, 165) 	0.91 	17.79          		[]				[]
+(2, 37) 	0.65 	21.47          		[]				[]
+(1, 82) 	0.57 	48.78          		[]				[]
+
+Best solution : [[1-164], [2-37, 42-132, 136-165], [1-82, 42-132]]

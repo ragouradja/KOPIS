@@ -1,0 +1,9 @@
+Predictions for 451CA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 84) 	1.0  	96.43          		[('1', '82')]		[96.42857142857143]
+(36, 81) 	0.69 	55.56          		[]				[]
+
+Best solution : [[0-84]]

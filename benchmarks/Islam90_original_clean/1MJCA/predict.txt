@@ -1,0 +1,10 @@
+Predictions for 1MJCA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 70) 	1.0  	98.55          		[('1', '69')]		[98.55072463768117]
+(38, 70) 	0.87 	44.93          		[]				[]
+(4, 42) 	0.68 	55.88          		[]				[]
+
+Best solution : [[1-70], [4-42, 38-70]]

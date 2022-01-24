@@ -1,0 +1,8 @@
+Predictions for 4CPAI
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 39) 	0.97 	94.59          		[('2', '38')]		[94.5945945945946]
+
+Best solution : [[3-39]]

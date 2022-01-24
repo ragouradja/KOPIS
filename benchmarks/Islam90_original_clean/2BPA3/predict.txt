@@ -1,0 +1,8 @@
+Predictions for 2BPA3
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(3, 38) 	0.98 	94.44          		[('2', '37')]		[94.44444444444444]
+
+Best solution : [[3-38]]

@@ -1,0 +1,10 @@
+Predictions for 1RISA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 98) 	1.0  	98.97          		[('1', '97')]		[98.96907216494846]
+(65, 97) 	0.94 	33.33          		[]				[]
+(1, 33) 	0.63 	33.33          		[]				[]
+
+Best solution : [[1-98]]

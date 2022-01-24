@@ -1,0 +1,9 @@
+Predictions for 1N4YA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 68) 	0.99 	98.53          		[('1', '68')]		[98.52941176470588]
+(38, 69) 	0.95 	44.12          		[]				[]
+
+Best solution : [[0-68]]

@@ -1,0 +1,10 @@
+Predictions for 1SNCA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(7, 143) 	1.0  	98.53          		[('7', '141')]		[98.52941176470588]
+(101, 141) 	0.9  	29.85          		[]				[]
+(7, 69) 	0.88 	46.27          		[]				[]
+
+Best solution : [[7-143]]

@@ -1,0 +1,10 @@
+Predictions for 2ILAA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(4, 153) 	1.0  	33.56          		[]				[]
+(5, 61) 	0.89 	29.27          		[]				[]
+(46, 128) 	0.88 	45.05          		[]				[]
+(114, 150) 	0.79 	-23.89         		[]				[]
+(85, 150) 	0.57 	1.77           		[]				[]

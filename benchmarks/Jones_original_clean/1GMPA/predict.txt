@@ -1,0 +1,10 @@
+Predictions for 1GMPA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 96) 	1.0  	97.92          		[('1', '95')]		[97.91666666666666]
+(58, 96) 	0.87 	38.95          		[]				[]
+(2, 34) 	0.55 	34.04          		[]				[]
+
+Best solution : [[0-96]]

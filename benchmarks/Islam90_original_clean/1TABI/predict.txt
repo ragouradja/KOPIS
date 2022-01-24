@@ -1,0 +1,6 @@
+Predictions for 1TABI
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(13, 49) 	0.96 	59.02          		[]				[]

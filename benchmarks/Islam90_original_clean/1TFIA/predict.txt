@@ -1,0 +1,8 @@
+Predictions for 1TFIA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 50) 	1.0  	97.96          		[('1', '50')]		[97.95918367346938]
+
+Best solution : [[2-50]]

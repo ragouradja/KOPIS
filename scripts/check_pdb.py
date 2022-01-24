@@ -1,21 +1,7 @@
+"""Check if PDB file are without gaps"""
+
 import numpy as np
-import re
 from numpy.core.numeric import allclose
-# from prediction_class import *
-# from mask_rcnn import *
-# from predict_pu import *
-# from kopis_solutions import *
-
-import urllib.request
-import sys
-import os
-import time
-import json
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import shutil
-
 
 if __name__ == "__main__":
     data_folder = "../data/"

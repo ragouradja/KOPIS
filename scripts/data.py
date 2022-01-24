@@ -1,8 +1,6 @@
 from mask_rcnn import *
 
-import time
 from joblib import Parallel, delayed
-import numpy as np
 
 def check(dataset, ID):
     image = dataset.load_image(ID)

@@ -1,0 +1,12 @@
+Predictions for 1ITHA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 144) 	1.0  	97.22          		[('1', '141')]		[97.22222222222221]
+(2, 77) 	0.95 	53.57          		[]				[]
+(78, 142) 	0.93 	44.68          		[]				[]
+(32, 67) 	0.68 	25.0           		[]				[]
+(105, 140) 	0.61 	25.0           		[]				[]
+
+Best solution : [[0-144], [2-77, 78-142], [2-77, 32-67, 78-142], [2-77, 32-67, 105-140]]

@@ -1,0 +1,6 @@
+Predictions for 3EBXA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 73) 	1.0  	83.56          		[]				[]

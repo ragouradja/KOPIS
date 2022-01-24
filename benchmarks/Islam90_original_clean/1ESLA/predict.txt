@@ -1,0 +1,12 @@
+Predictions for 1ESLA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 157) 	1.0  	99.36          		[]				[]
+(115, 156) 	0.97 	26.28          		[]				[]
+(31, 105) 	0.86 	47.44          		[]				[]
+(0, 69) 	0.8  	43.31          		[]				[]
+(69, 106) 	0.63 	23.72          		[]				[]
+
+Best solution : [[0-157], [0-69, 31-105, 115-156], [31-105, 69-106, 115-156]]

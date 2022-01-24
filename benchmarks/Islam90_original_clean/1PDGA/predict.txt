@@ -1,0 +1,10 @@
+Predictions for 1PDGA
+
+Benchmark Islam90_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(9, 96) 	1.0  	82.11          		[]				[]
+(55, 95) 	0.92 	34.04          		[]				[]
+(10, 57) 	0.84 	54.65          		[]				[]
+
+Best solution : [[9-96, 55-95], [10-57, 55-95]]

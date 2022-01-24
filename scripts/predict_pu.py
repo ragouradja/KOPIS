@@ -1,51 +1,62 @@
-# python predict_pu.py -d -p 3CD4 -c A -m ../results/real_pad_256prot_104820211224T1841/mask_rcnn_real_pad_256prot_1048_0050.h5
+"""Main script to make a prediction with KOPIS
+
+The output will be in
+Usage
+-----
+To download the PDB file : 
+
+python predict_pu.py -p PDB -c [CHAIN] -d
+
+The -c option is not mandatory
+Option -p can be either be a file.pdb format or a PDB code to be downloaded with the -p option
+"""
 import os
 import sys
 import argparse
 import numpy as np
 # import pymol
-import cv2
 import urllib.request
+import shutil
 
 mrcnnpath = "../"
 script_path = "."
 sys.path += [mrcnnpath, script_path]
 from mrcnn.model import MaskRCNN
 from mask_rcnn import *
-
-
 from prediction_class import *
 from benchmark_test import *
+import warnings
+warnings.filterwarnings("ignore")
 
 
-"""
-Todo : 
-- Load config from file
-- Multiple predict
-- Cleaner code
-- Gerer les gaps (.num) needed pour prediction ??
-
-"""
 def get_args():
+    """Function to get all args
+    Arguments
+    ---------
+    -p : PDB code or PDB file
+    If PDB code is given, need -d option to download the PDB file
 
+    -b : Path to the benchmark contains the reference domains of the PDB
+    -c : If a specific chain as to be selected. Otherwise, the whole protein will be selected
+    -m : Path to the model to load. Default if MRCNN on 1024 image size at epoch 50
+    -d : To download the PDB code without the chain given in -p
+    """
     parser = argparse.ArgumentParser(description="Compute prediction of PU and give image and file of PU predicted",
     formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("-p", help="Path to the PDB file.", type=str, required=True, metavar="pdb")
+    parser.add_argument("-p", help="Path to the PDB file or PDB code.", type=str, required=True, metavar="pdb")
     parser.add_argument("-b", help="Path to the benchmark file.", type=str, metavar="bench")
     parser.add_argument("-c", help="Chain to select.", type=str, metavar="chain")
     parser.add_argument("-m", help="Path to the model.", type=str, metavar="model",
      default = "../results/real_pad_1024_1048/mask_rcnn_real_pad_1024prot_1048_0050.h5")
     parser.add_argument("-d", help="Boolean to download PDB file.",  action = "store_true")
-
     args = parser.parse_args()
     
-    pdb = args.p.upper()
+    pdb = args.p
     chain = args.c 
     down = args.d
     model = args.m = rf"{args.m}"
     bench = args.b
-
     if not os.path.isfile(model):
         print(model)
         sys.exit("Please, enter a valid model.")
@@ -62,7 +73,7 @@ def get_args():
             sys.exit("Please, enter a valid PDB file.")
         if not os.path.isfile(pdb):
             sys.exit(f"The file {pdb} does not exist. Please enter a valid PDB file.")
-
+        args.p = args.p[:-4].upper() + ".pdb"
     else: # Download PDB file
         try:
             if "pdb" not in pdb:
@@ -76,9 +87,6 @@ def get_args():
     if bench:
         if not os.path.isfile(bench):
             sys.exit("Please enter a valid benchmark file.")
-
-
-    print(f"File {pdb} downloaded")
     return args
 
 
@@ -95,6 +103,7 @@ def get_pdb_name(pdb_file):
 
 
 def get_chain(pdb_file, chain, folder):
+    """Select the chain wanted by the user"""
     content = []
     with open(f"{folder}{pdb_file}") as filin:
         for line in filin:
@@ -115,6 +124,7 @@ def get_chain(pdb_file, chain, folder):
     return new_name, int(first_pos), int(last_pos)
 
 def get_first_pos(pdb_file, folder):
+    """Get the first position of the PDB file"""
     first_pos = ""
     last_pos = ""
     content = []
@@ -132,6 +142,7 @@ def get_first_pos(pdb_file, folder):
     return int(first_pos), int(last_pos)
 
 def get_map(pdb_name, directory):
+    """Get the contact probability map by calling a C program 'distance_MAP_CA' """
 
     if not os.path.exists(directory):  
         os.mkdir(directory)
@@ -147,7 +158,9 @@ def get_map(pdb_name, directory):
     
     
 def color_PU(results, first_pos):
-
+    """Color the domains predicted on pymol
+    Need to be updated
+    """
     # Prendre en compte les gaps !
     list_PU = results["rois"]
     N = len(list_PU)
@@ -164,7 +177,9 @@ def color_PU(results, first_pos):
         pymol.cmd.color(color = 'auto', selection = PU_name)
 
 def write_output(predictions, full_folder, name_pdb, bench_name, best = None):
-
+    """Write the output file
+    The file contains the domains predicted by KOPIS
+    """
     if not os.path.exists(full_folder):
         os.mkdir(full_folder)   
     f = open(f"{full_folder}/predict.txt", "w")
@@ -183,14 +198,25 @@ def write_output(predictions, full_folder, name_pdb, bench_name, best = None):
             msg = obj.get_info()
         print(msg)
         f.write(msg)
-    if best:
-        f.write(f'\nBest solution : {best}')
-        print(best)
+    best = solutions_final(predictions)
+
+    f.write(f'\nBest solution  : \n')
+    f.write(f'----------------\n')
+    for i,sol in enumerate(best):        
+        if i != 0:
+            f.write(f"\nAlternative #{i+1} : \n")
+            f.write(f'----------------\n')
+        for dom in sol:
+            f.write(f"{dom.delim[0]}-{dom.delim[1]} ")
+        f.write("\n")
+  
+
+    print(best)
     f.close()
 
 
 def make_predict(image, model_name = None, model_pred = None):
-
+    """Make the predict"""
 
     config = PUConfig() # Todo: load model's config from folder
     # config.txt_to_config("../results/real_pad_512_1048/real_pad_512_1048.cfg")
@@ -219,6 +245,69 @@ def get_name_model(model_name):
     else:
         return model_name.split("\\")[2]
 
+
+def print_output(predictions, bench_name):
+    if bench_name:
+        header = "Prediction\tScore\tCoverage Prot\t\tBenchmark association\t\tBenchmark cov\n"
+    else:
+        header = "Prediction\tScore\tCoverage Prot\n"
+    print(header)
+    for obj in predictions:
+        if bench_name:
+            msg = obj.get_info_bench()
+        else:
+            msg = obj.get_info()
+        print(msg)
+
+
+def solutions_final(pred):
+    covered = []
+    temp_solution = []
+    all_solution = []
+    THRESH_COV = 50
+    THRESH_GLOBAL = 85
+    for i in range(len(pred)):
+        temp_solution = []
+        cov_global = 0
+
+        take = True
+        for domain in temp_solution:
+            cov_pred_domain = pred[i].get_coverage(domain)
+            if cov_pred_domain >= THRESH_COV:
+                take = False
+        if take:
+            cov_global += pred[i].get_cov_gen()
+            temp_solution.append(pred[i])
+        if cov_global >= THRESH_GLOBAL:
+            all_solution.append(temp_solution)
+            temp_solution = []
+
+            cov_global = 0
+
+        else:
+            for j in range(i):
+                take2 = True
+                if pred[j].get_cov_gen() >= 85:
+                    continue
+                cov_i_j = pred[i].get_coverage(pred[j])
+                # print(pred[i],pred[j], cov_i_j, take2)
+                if cov_i_j >= THRESH_COV:
+                    continue
+                for domain in temp_solution:
+                    cov_pred_domain = pred[j].get_coverage(domain)
+                    if cov_pred_domain >= THRESH_COV:
+                        take2 = False
+                if take2:
+                    cov_global += pred[j].get_cov_gen()
+                    temp_solution.append(pred[j])
+                    if cov_global >= THRESH_GLOBAL:
+                        all_solution.append(sorted(temp_solution))
+                        cov_global = 0
+                        temp_solution = []
+                        break
+
+    return all_solution
+
 if __name__ == "__main__":
     start = time.time()
     args = get_args()
@@ -228,6 +317,7 @@ if __name__ == "__main__":
 
     name_pdb = get_pdb_name(pdb_file) # file without .pdb
     folder = f"../results/predictions/{name_pdb}/"
+
     config_name = get_name_model(model_name)
     full_folder = f"{folder}{config_name}/"
     if not os.path.exists(folder):
@@ -235,7 +325,11 @@ if __name__ == "__main__":
     
     if not os.path.exists(full_folder):
         os.mkdir(full_folder)
-    os.system(f"mv {pdb_file} {full_folder}{pdb_file}")
+    if args.d:
+        shutil.move(pdb_file, f"{full_folder}{pdb_file}")
+    else:
+        shutil.copy(pdb_file, f"{full_folder}{pdb_file}")
+
     print(f"mv {pdb_file} {full_folder}{pdb_file} moved")
 
     if args.c:
@@ -263,8 +357,7 @@ if __name__ == "__main__":
         bench_name = None
 
     coverage_prot(predictions, bench)
-    best = solutions_final(predictions,last_pos )
-    write_output(predictions, full_folder,name_pdb, bench_name, best = best)
+    write_output(predictions, full_folder,name_pdb, bench_name)
     
     print(time.time() - start)
     # pymol.cmd.load(new_pdb_file)

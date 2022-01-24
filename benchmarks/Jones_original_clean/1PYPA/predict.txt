@@ -1,0 +1,13 @@
+Predictions for 1PYPA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 273) 	0.98 	48.84          		[]				[]
+(104, 212) 	0.96 	19.5           		[]				[]
+(4, 144) 	0.91 	25.22          		[]				[]
+(211, 279) 	0.9  	12.34          		[]				[]
+(252, 280) 	0.71 	5.19           		[]				[]
+(41, 88) 	0.56 	8.59           		[]				[]
+
+Best solution : [[0-273, 4-144, 104-212], [0-273, 4-144, 104-212, 211-279], [0-273, 4-144, 104-212, 252-280], [0-273, 4-144, 41-88, 104-212]]

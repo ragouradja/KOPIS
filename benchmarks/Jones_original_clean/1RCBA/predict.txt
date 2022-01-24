@@ -1,0 +1,12 @@
+Predictions for 1RCBA
+
+Benchmark Jones_original_clean
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 132) 	1.0  	96.97          		[('1', '129')]		[96.96969696969697]
+(95, 129) 	0.87 	26.56          		[]				[]
+(1, 74) 	0.79 	57.03          		[]				[]
+(2, 35) 	0.61 	25.78          		[]				[]
+(34, 101) 	0.58 	52.34          		[]				[]
+
+Best solution : [[0-132], [1-74, 2-35, 95-129], [1-74, 34-101, 95-129]]

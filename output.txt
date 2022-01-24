@@ -1,0 +1,151 @@
+Kopis vs Islam90_original
+../benchmarks/bench/Islam90_original
+Nb correct domain : 25 / 44 : 56.82%
+
+Kopis vs Jones_original
+../benchmarks/bench/Jones_original
+Nb correct domain : 15 / 30 : 50.0%
+
+Jones_DP vs Jones_original
+Nb correct domain : 20 / 30 : 66.67%
+
+Islam90_DDCath vs Islam90_original
+Nb correct domain : 31 / 44 : 70.45%
+
+Jones_DDAuth vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Jones_DDCath vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Islam90_PDP vs Islam90_original
+Nb correct domain : 32 / 44 : 72.73%
+
+Islam90_DP vs Islam90_original
+Nb correct domain : 33 / 44 : 75.0%
+
+Jones_DDScop vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Islam90_DDAuth vs Islam90_original
+Nb correct domain : 31 / 44 : 70.45%
+
+Islam90_DDScop vs Islam90_original
+Nb correct domain : 31 / 44 : 70.45%
+
+Jones_PDP vs Jones_original
+Nb correct domain : 19 / 30 : 63.33%
+
+-------------------------------------
+
+sans deletion + select chain
+
+Kopis 256
+
+Kopis vs Islam90_original
+Nb correct domain : 40 / 54
+Nb domain tested : 54 / 98
+Nb prot tested : 42 / 60
+
+Nb correct domain filtered : 32 / 54 : 59.26%
+
+Kopis vs Jones_original
+Nb correct domain : 24 / 30
+Nb domain tested : 30 / 72
+Nb prot tested : 24 / 39
+
+Nb correct domain filtered : 19 / 30 : 63.33%
+
+SWORD_Jones vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Jones_DP vs Jones_original
+Nb correct domain : 20 / 30 : 66.67%
+
+Islam90_DDCath vs Islam90_original
+Nb correct domain : 32 / 54 : 59.26%
+
+Jones_DDAuth vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Jones_DDCath vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Islam90_PDP vs Islam90_original
+Nb correct domain : 34 / 54 : 62.96%
+
+Islam90_DP vs Islam90_original
+Nb correct domain : 34 / 54 : 62.96%
+
+Jones_DDScop vs Jones_original
+Nb correct domain : 21 / 30 : 70.0%
+
+Islam90_DDAuth vs Islam90_original
+Nb correct domain : 32 / 54 : 59.26%
+
+SWORD_Islam90 vs Islam90_original
+Nb correct domain : 27 / 54 : 50.0%
+
+Islam90_DDScop vs Islam90_original
+Nb correct domain : 32 / 54 : 59.26%
+
+Jones_PDP vs Jones_original
+Nb correct domain : 20 / 30 : 66.67%
+
+
+
+
+--------------------------------------
+
+512 images epoch 24
+Kopis 512
+
+Kopis vs Islam90_original
+Nb correct domain : 96 / 94
+Nb domain tested : 94 / 97
+Nb prot tested : 58 / 59
+
+Nb correct domain filtered : 38 / 94 : 40.43%
+
+Kopis vs Jones_original
+Nb correct domain : 58 / 66
+Nb domain tested : 66 / 72
+Nb prot tested : 37 / 39
+
+Nb correct domain filtered : 20 / 66 : 30.3%
+
+SWORD_Jones vs Jones_original
+Nb correct domain : 26 / 66 : 39.39%
+
+Jones_DP vs Jones_original
+Nb correct domain : 25 / 66 : 37.88%
+
+Islam90_DDCath vs Islam90_original
+Nb correct domain : 39 / 94 : 41.49%
+
+Jones_DDAuth vs Jones_original
+Nb correct domain : 22 / 66 : 33.33%
+
+Jones_DDCath vs Jones_original
+Nb correct domain : 22 / 66 : 33.33%
+
+Islam90_PDP vs Islam90_original
+Nb correct domain : 40 / 94 : 42.55%
+
+Islam90_DP vs Islam90_original
+Nb correct domain : 43 / 94 : 45.74%
+
+Jones_DDScop vs Jones_original
+Nb correct domain : 22 / 66 : 33.33%
+
+Islam90_DDAuth vs Islam90_original
+Nb correct domain : 38 / 94 : 40.43%
+
+SWORD_Islam90 vs Islam90_original
+Nb correct domain : 33 / 94 : 35.11%
+
+Islam90_DDScop vs Islam90_original
+Nb correct domain : 39 / 94 : 41.49%
+
+Jones_PDP vs Jones_original
+Nb correct domain : 26 / 66 : 39.39%
