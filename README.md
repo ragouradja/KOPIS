@@ -26,6 +26,7 @@ You can run KOPIS with the KOPIS.py script :
 
     $ python3 KOPIS.py -p 2ALE -c A -d
 
+This command will download the 2ALE PDB file and run KOPIS on chain A
 
 Remarks
 -------
