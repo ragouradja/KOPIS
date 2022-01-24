@@ -1,0 +1,13 @@
+Predictions for 1BRDA
+
+Benchmark Jones_PDP
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(7, 186) 	1.0  	79.65          		[('1', '176')]		[96.59]
+(142, 178) 	0.93 	16.37          		[]				[]
+(10, 53) 	0.9  	19.47          		[]				[]
+(116, 144) 	0.85 	12.83          		[]				[]
+(68, 135) 	0.74 	30.09          		[]				[]
+(7, 99) 	0.68 	41.15          		[]				[]
+(48, 79) 	0.67 	14.16          		[]				[]
+(116, 175) 	0.65 	26.55          		[]				[]

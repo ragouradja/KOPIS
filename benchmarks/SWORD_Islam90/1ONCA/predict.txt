@@ -1,0 +1,12 @@
+Predictions for 1ONCA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(1, 105) 	1.0  	100.0          		[('1', '103')]		[100.0]
+(66, 105) 	0.93 	37.5           		[]				[]
+(38, 68) 	0.9  	29.81          		[]				[]
+(3, 39) 	0.9  	35.58          		[]				[]
+(45, 94) 	0.65 	48.08          		[]				[]
+
+Best solution : [[1-105], [3-39, 38-68, 66-105]]

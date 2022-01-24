@@ -1,0 +1,10 @@
+Predictions for 1PI2A
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 63) 	1.0  	98.41          		[('1', '61')]		[98.36]
+(32, 62) 	0.85 	49.21          		[]				[]
+(4, 35) 	0.62 	50.79          		[]				[]
+
+Best solution : [[2-63], [4-35, 32-62]]

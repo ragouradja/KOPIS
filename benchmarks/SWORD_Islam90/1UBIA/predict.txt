@@ -1,0 +1,10 @@
+Predictions for 1UBIA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 78) 	1.0  	100.0          		[('1', '76')]		[100.0]
+(38, 76) 	0.97 	51.32          		[]				[]
+(1, 37) 	0.93 	48.68          		[]				[]
+
+Best solution : [[0-78], [1-37, 38-76]]

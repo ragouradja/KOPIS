@@ -1,0 +1,13 @@
+Predictions for 1POAA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(0, 120) 	1.0  	100.0          		[('1', '118')]		[100.0]
+(47, 95) 	0.97 	41.53          		[]				[]
+(1, 49) 	0.92 	41.53          		[]				[]
+(89, 118) 	0.89 	25.42          		[]				[]
+(57, 119) 	0.8  	52.54          		[]				[]
+(34, 61) 	0.53 	23.73          		[]				[]
+
+Best solution : [[0-120], [1-49, 47-95, 89-118], [1-49, 57-119], [34-61, 89-118]]

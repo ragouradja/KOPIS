@@ -13,7 +13,7 @@ from scipy.stats import wilcoxon
 
 from prediction_class import *
 from mask_rcnn import *
-from predict_pu import *
+from KOPIS import *
 
 def get_bench_name(bench_file):
     """Get bench name from full path of the bench file"""

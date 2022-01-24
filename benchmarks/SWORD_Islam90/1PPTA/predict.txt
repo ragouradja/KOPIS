@@ -1,0 +1,8 @@
+Predictions for 1PPTA
+
+Benchmark Islam90_DDCath
+
+Prediction	Score	Coverage Prot		Benchmark association		Benchmark cov
+(2, 37) 	0.99 	97.22          		[('1', '36')]		[97.22]
+
+Best solution : [[2-37]]
